@@ -1,0 +1,57 @@
+{
+  "books": [
+    {
+      "name": "창세기",
+      "abbr": "창",
+      "testament": "ot",
+      "chapters": [
+        {
+          "chapter": 1,
+          "verses": [
+            "태초에 하나님이 천지를 창조하시니라",
+            "땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 영은 수면 위에 운행하시니라"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "출애굽기",
+      "abbr": "출",
+      "testament": "ot",
+      "chapters": [
+        {
+          "chapter": 1,
+          "verses": [
+            "이스라엘의 아들들의 이름은 이러하니"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "마태복음",
+      "abbr": "마",
+      "testament": "nt",
+      "chapters": [
+        {
+          "chapter": 1,
+          "verses": [
+            "아브라함과 다윗의 자손 예수 그리스도의 계보라"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "마가복음",
+      "abbr": "막",
+      "testament": "nt",
+      "chapters": [
+        {
+          "chapter": 1,
+          "verses": [
+            "하나님의 아들 예수 그리스도의 복음의 시작이라"
+          ]
+        }
+      ]
+    }
+  ]
+}
