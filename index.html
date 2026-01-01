@@ -105,6 +105,36 @@
             font-size: 16px;
         }
 
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
         .calendar-container {
             background: white;
             border: 1px solid #ddd;
@@ -208,157 +238,6 @@
             margin-left: 5px;
             cursor: pointer;
             font-weight: bold;
-        }
-
-        .progress-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .progress-modal.active {
-            display: flex;
-        }
-
-        .progress-modal-content {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .progress-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .progress-modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 28px;
-            color: #999;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            line-height: 1;
-        }
-
-        .progress-item {
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .progress-item.completed {
-            background: #e8f5e9;
-        }
-
-        .progress-info {
-            flex: 1;
-        }
-
-        .progress-book {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 3px;
-        }
-
-        .progress-date {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .progress-toggle {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .progress-toggle.completed {
-            background: #4caf50;
-            color: white;
-        }
-
-        .progress-toggle.incomplete {
-            background: #e0e0e0;
-            color: #666;
-        }
-
-        .view-progress-btn {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            transition: transform 0.2s;
-        }
-
-        .view-progress-btn:active {
-            transform: scale(0.98);
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
         }
 
         .schedule-list {
@@ -599,6 +478,127 @@
             padding: 40px;
             color: #999;
         }
+
+        .progress-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-modal.active {
+            display: flex;
+        }
+
+        .progress-modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .progress-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .progress-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            line-height: 1;
+        }
+
+        .progress-item {
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-item.completed {
+            background: #e8f5e9;
+        }
+
+        .progress-info {
+            flex: 1;
+        }
+
+        .progress-book {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .progress-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .progress-toggle {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .progress-toggle.completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .progress-toggle.incomplete {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .view-progress-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .view-progress-btn:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
@@ -721,7 +721,6 @@
         </div>
     </div>
 
-    <!-- 읽음 표시 확인 및 수정 모달 -->
     <div class="progress-modal" id="progress-modal">
         <div class="progress-modal-content">
             <div class="progress-modal-header">
@@ -733,7 +732,8 @@
     </div>
 
     <script>
-        let bibleData = null;
+        let booksConfig = null;
+        let bibleData = {};
         let scheduleData = [];
         let readingProgress = {};
         let bookmarks = [];
@@ -741,7 +741,6 @@
         let excludedDates = [];
         let currentCalendarMonth = new Date();
 
-        // 로컬 스토리지에서 데이터 로드
         function loadData() {
             const savedSchedule = localStorage.getItem('bibleSchedule');
             const savedProgress = localStorage.getItem('readingProgress');
@@ -754,7 +753,6 @@
             if (savedExcludedDates) excludedDates = JSON.parse(savedExcludedDates);
         }
 
-        // 로컬 스토리지에 데이터 저장
         function saveData() {
             localStorage.setItem('bibleSchedule', JSON.stringify(scheduleData));
             localStorage.setItem('readingProgress', JSON.stringify(readingProgress));
@@ -762,11 +760,10 @@
             localStorage.setItem('excludedDates', JSON.stringify(excludedDates));
         }
 
-        // 성경 데이터 로드
-        async function loadBibleData() {
+        async function loadBooksConfig() {
             try {
-                const response = await fetch('bible.json');
-                bibleData = await response.json();
+                const response = await fetch('books.json');
+                booksConfig = await response.json();
                 populateBooksCheckboxes();
                 loadData();
                 renderSchedule();
@@ -774,24 +771,62 @@
                 renderCalendar();
                 renderExcludedDates();
             } catch (error) {
-                alert('성경 데이터를 불러오는데 실패했습니다. bible.json 파일이 같은 폴더에 있는지 확인하세요.');
+                alert('books.json 파일을 불러오는데 실패했습니다. 파일이 같은 폴더에 있는지 확인하세요.');
                 console.error(error);
             }
         }
 
-        // 성경책 체크박스 생성
+        async function loadBookData(bookIndex) {
+            if (bibleData[bookIndex]) return bibleData[bookIndex];
+
+            const book = booksConfig.books[bookIndex];
+            try {
+                const response = await fetch(book.file);
+                const text = await response.text();
+                const parsed = parseBibleText(text, book.abbr);
+                bibleData[bookIndex] = { ...book, chapters: parsed };
+                return bibleData[bookIndex];
+            } catch (error) {
+                console.error(`${book.name} 파일 로드 실패:`, error);
+                return null;
+            }
+        }
+
+        function parseBibleText(text, abbr) {
+            const lines = text.split('\n').filter(line => line.trim());
+            const chapters = {};
+
+            lines.forEach(line => {
+                const match = line.match(/^(\w+?)(\d+):(\d+)\s+(.+)$/);
+                if (match) {
+                    const [, bookAbbr, chapter, verse, content] = match;
+                    const chapterNum = parseInt(chapter);
+                    const verseNum = parseInt(verse);
+
+                    if (!chapters[chapterNum]) {
+                        chapters[chapterNum] = {};
+                    }
+                    chapters[chapterNum][verseNum] = content.trim();
+                }
+            });
+
+            return Object.keys(chapters).sort((a, b) => a - b).map(chapterNum => ({
+                chapter: parseInt(chapterNum),
+                verses: chapters[chapterNum]
+            }));
+        }
+
         function populateBooksCheckboxes() {
             const container = document.getElementById('books-checkboxes');
             container.innerHTML = '';
             
-            // 구약 섹션
             const otSection = document.createElement('div');
             otSection.style.marginBottom = '15px';
             otSection.innerHTML = '<strong style="color: #667eea; display: block; margin-bottom: 10px;">📜 구약</strong>';
             
-            const otBooks = bibleData.books.filter(book => book.testament === 'ot');
+            const otBooks = booksConfig.books.filter(book => book.testament === 'ot');
             otBooks.forEach((book, idx) => {
-                const bookIndex = bibleData.books.indexOf(book);
+                const bookIndex = booksConfig.books.indexOf(book);
                 const label = document.createElement('label');
                 label.className = 'checkbox-label';
                 label.innerHTML = `
@@ -801,13 +836,12 @@
             });
             container.appendChild(otSection);
             
-            // 신약 섹션
             const ntSection = document.createElement('div');
             ntSection.innerHTML = '<strong style="color: #667eea; display: block; margin-bottom: 10px;">✝️ 신약</strong>';
             
-            const ntBooks = bibleData.books.filter(book => book.testament === 'nt');
+            const ntBooks = booksConfig.books.filter(book => book.testament === 'nt');
             ntBooks.forEach((book, idx) => {
-                const bookIndex = bibleData.books.indexOf(book);
+                const bookIndex = booksConfig.books.indexOf(book);
                 const label = document.createElement('label');
                 label.className = 'checkbox-label';
                 label.innerHTML = `
@@ -818,7 +852,6 @@
             container.appendChild(ntSection);
         }
 
-        // 탭 전환
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -831,165 +864,22 @@
             }
         }
 
-        // 읽기 요일 선택된 것 가져오기
         function getSelectedDays() {
             const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked');
             return Array.from(checkboxes).map(cb => parseInt(cb.value));
         }
 
-        // 제외 날짜 파싱
         function parseExcludeDates() {
             return excludedDates;
         }
 
-        // 달력 렌더링
-        function renderCalendar() {
-            const year = currentCalendarMonth.getFullYear();
-            const month = currentCalendarMonth.getMonth();
-            
-            document.getElementById('calendar-title').textContent = 
-                `${year}년 ${month + 1}월`;
-
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = '';
-
-            // 요일 헤더
-            const dayHeaders = ['일', '월', '화', '수', '목', '금', '토'];
-            dayHeaders.forEach(day => {
-                const header = document.createElement('div');
-                header.className = 'calendar-day-header';
-                header.textContent = day;
-                grid.appendChild(header);
-            });
-
-            // 날짜 셀
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            for (let i = 0; i < 42; i++) {
-                const currentDate = new Date(startDate);
-                currentDate.setDate(startDate.getDate() + i);
-                
-                const dateStr = currentDate.toISOString().split('T')[0];
-                const isCurrentMonth = currentDate.getMonth() === month;
-                const isToday = currentDate.getTime() === today.getTime();
-                const isExcluded = excludedDates.includes(dateStr);
-
-                const cell = document.createElement('div');
-                cell.className = 'calendar-day';
-                if (!isCurrentMonth) cell.classList.add('other-month');
-                if (isToday) cell.classList.add('today');
-                if (isExcluded) cell.classList.add('excluded');
-                
-                cell.textContent = currentDate.getDate();
-                cell.onclick = () => toggleExcludeDate(dateStr);
-                
-                grid.appendChild(cell);
-            }
-        }
-
-        // 달력 월 변경
-        function changeMonth(direction) {
-            currentCalendarMonth.setMonth(currentCalendarMonth.getMonth() + direction);
-            renderCalendar();
-        }
-
-        // 제외 날짜 토글
-        function toggleExcludeDate(dateStr) {
-            const index = excludedDates.indexOf(dateStr);
-            if (index > -1) {
-                excludedDates.splice(index, 1);
-            } else {
-                excludedDates.push(dateStr);
-            }
-            excludedDates.sort();
-            saveData();
-            renderCalendar();
-            renderExcludedDates();
-        }
-
-        // 제외 날짜 목록 렌더링
-        function renderExcludedDates() {
-            const container = document.getElementById('excluded-dates-list');
-            if (excludedDates.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#999; padding:10px;">제외된 날짜가 없습니다</div>';
-                return;
-            }
-
-            container.innerHTML = excludedDates.map(date => `
-                <span class="excluded-date-tag">
-                    ${date}
-                    <button onclick="toggleExcludeDate('${date}')">×</button>
-                </span>
-            `).join('');
-        }
-
-        // 읽음 표시 모달 열기
-        function openProgressModal() {
-            if (scheduleData.length === 0) {
-                alert('먼저 스케줄을 생성해주세요.');
-                return;
-            }
-
-            const modal = document.getElementById('progress-modal');
-            const progressList = document.getElementById('progress-list');
-            
-            progressList.innerHTML = '';
-
-            // 모든 예정된 장들을 날짜별로 표시
-            scheduleData.forEach(schedule => {
-                schedule.chapters.forEach(chapter => {
-                    const key = `${chapter.book}-${chapter.chapter}`;
-                    const isCompleted = readingProgress[key] === true;
-
-                    const item = document.createElement('div');
-                    item.className = `progress-item ${isCompleted ? 'completed' : ''}`;
-                    item.innerHTML = `
-                        <div class="progress-info">
-                            <div class="progress-book">${chapter.book} ${chapter.chapter}장</div>
-                            <div class="progress-date">예정일: ${schedule.date}</div>
-                        </div>
-                        <button class="progress-toggle ${isCompleted ? 'completed' : 'incomplete'}" 
-                            onclick="toggleProgressInModal('${chapter.book}', ${chapter.chapter})">
-                            ${isCompleted ? '✓ 완료' : '미완료'}
-                        </button>
-                    `;
-                    progressList.appendChild(item);
-                });
-            });
-
-            modal.classList.add('active');
-        }
-
-        // 모달 닫기
-        function closeProgressModal() {
-            document.getElementById('progress-modal').classList.remove('active');
-        }
-
-        // 모달에서 읽음 표시 토글
-        function toggleProgressInModal(bookName, chapter) {
-            const key = `${bookName}-${chapter}`;
-            readingProgress[key] = !readingProgress[key];
-            saveData();
-            openProgressModal(); // 모달 새로고침
-            renderSchedule(); // 스케줄도 업데이트
-            recalculateSchedule();
-        }
-
-        // 날짜가 읽기 날짜인지 확인
         function isReadingDay(date, selectedDays, excludeDates) {
             const dateStr = date.toISOString().split('T')[0];
             if (excludeDates.includes(dateStr)) return false;
             return selectedDays.includes(date.getDay());
         }
 
-        // 스케줄 생성
-        function generateSchedule() {
+        async function generateSchedule() {
             const startDate = new Date(document.getElementById('start-date').value);
             const endDate = new Date(document.getElementById('end-date').value);
             const selectedDays = getSelectedDays();
@@ -1006,63 +896,38 @@
                 return;
             }
 
-            // 읽을 장들 수집
-            let chaptersToRead = [];
+            let selectedBookIndices = [];
             
             if (bibleRange === 'custom') {
-                const selectedBooks = Array.from(document.querySelectorAll('#books-checkboxes input:checked'))
+                selectedBookIndices = Array.from(document.querySelectorAll('#books-checkboxes input:checked'))
                     .map(cb => parseInt(cb.value));
-                
-                selectedBooks.forEach(bookIndex => {
-                    const book = bibleData.books[bookIndex];
-                    book.chapters.forEach(chapter => {
-                        chaptersToRead.push({
-                            book: book.name,
-                            bookIndex: bookIndex,
-                            chapter: chapter.chapter
-                        });
-                    });
-                });
             } else if (bibleRange === 'ot') {
-                // 구약만
-                bibleData.books.forEach((book, bookIndex) => {
-                    if (book.testament === 'ot') {
-                        book.chapters.forEach(chapter => {
-                            chaptersToRead.push({
-                                book: book.name,
-                                bookIndex: bookIndex,
-                                chapter: chapter.chapter
-                            });
-                        });
-                    }
-                });
+                selectedBookIndices = booksConfig.books
+                    .map((book, idx) => book.testament === 'ot' ? idx : -1)
+                    .filter(idx => idx !== -1);
             } else if (bibleRange === 'nt') {
-                // 신약만
-                bibleData.books.forEach((book, bookIndex) => {
-                    if (book.testament === 'nt') {
-                        book.chapters.forEach(chapter => {
-                            chaptersToRead.push({
-                                book: book.name,
-                                bookIndex: bookIndex,
-                                chapter: chapter.chapter
-                            });
-                        });
-                    }
-                });
+                selectedBookIndices = booksConfig.books
+                    .map((book, idx) => book.testament === 'nt' ? idx : -1)
+                    .filter(idx => idx !== -1);
             } else {
-                // 전체 성경
-                bibleData.books.forEach((book, bookIndex) => {
-                    book.chapters.forEach(chapter => {
-                        chaptersToRead.push({
-                            book: book.name,
-                            bookIndex: bookIndex,
-                            chapter: chapter.chapter
-                        });
-                    });
-                });
+                selectedBookIndices = booksConfig.books.map((_, idx) => idx);
             }
 
-            // 읽기 가능한 날짜 계산
+            let chaptersToRead = [];
+            
+            for (const bookIndex of selectedBookIndices) {
+                const bookData = await loadBookData(bookIndex);
+                if (bookData) {
+                    bookData.chapters.forEach(chapter => {
+                        chaptersToRead.push({
+                            book: bookData.name,
+                            bookIndex: bookIndex,
+                            chapter: chapter.chapter
+                        });
+                    });
+                }
+            }
+
             const readingDates = [];
             let currentDate = new Date(startDate);
             
@@ -1078,7 +943,6 @@
                 return;
             }
 
-            // 장 분배
             const chaptersPerDay = Math.ceil(chaptersToRead.length / readingDates.length);
             scheduleData = [];
             
@@ -1103,7 +967,6 @@
             alert('스케줄이 생성되었습니다!');
         }
 
-        // 스케줄 렌더링
         function renderSchedule() {
             const container = document.getElementById('schedule-list');
             const today = new Date().toISOString().split('T')[0];
@@ -1164,7 +1027,6 @@
             updateStats();
         }
 
-        // 장 읽음 토글
         function toggleChapter(bookName, chapter, bookIndex) {
             const key = `${bookName}-${chapter}`;
             readingProgress[key] = !readingProgress[key];
@@ -1173,14 +1035,12 @@
             recalculateSchedule();
         }
 
-        // 스케줄 재계산
         function recalculateSchedule() {
             const today = new Date().toISOString().split('T')[0];
             const todayIndex = scheduleData.findIndex(s => s.date >= today);
             
             if (todayIndex === -1) return;
 
-            // 아직 읽지 않은 장들 수집
             let unreadChapters = [];
             scheduleData.forEach((schedule, idx) => {
                 if (idx >= todayIndex) {
@@ -1192,12 +1052,10 @@
                 }
             });
 
-            // 남은 날짜들
             const remainingSchedules = scheduleData.filter((s, idx) => idx >= todayIndex);
             
             if (remainingSchedules.length === 0 || unreadChapters.length === 0) return;
 
-            // 재분배
             const chaptersPerDay = Math.ceil(unreadChapters.length / remainingSchedules.length);
             let chapterIndex = 0;
             
@@ -1212,7 +1070,6 @@
             renderSchedule();
         }
 
-        // 통계 업데이트
         function updateStats() {
             const totalDays = scheduleData.length;
             const completedDays = scheduleData.filter(s => 
@@ -1226,19 +1083,22 @@
             document.getElementById('remaining-days').textContent = remainingDays;
         }
 
-        // 장 읽기
-        function readChapter(bookIndex, chapterNum) {
-            const book = bibleData.books[bookIndex];
-            const chapter = book.chapters.find(ch => ch.chapter === chapterNum);
-            
+        async function readChapter(bookIndex, chapterNum) {
+            const bookData = await loadBookData(bookIndex);
+            if (!bookData) {
+                alert('성경 데이터를 불러올 수 없습니다.');
+                return;
+            }
+
+            const chapter = bookData.chapters.find(ch => ch.chapter === chapterNum);
             if (!chapter) return;
 
-            currentReading = { bookIndex, chapterNum, bookName: book.name };
+            currentReading = { bookIndex, chapterNum, bookName: bookData.name };
 
             const reader = document.getElementById('bible-reader');
             reader.innerHTML = `
                 <div class="bible-header">
-                    <div class="bible-title">${book.name} ${chapterNum}장</div>
+                    <div class="bible-title">${bookData.name} ${chapterNum}장</div>
                 </div>
                 <div id="verses-container"></div>
                 <div class="navigation-btns">
@@ -1248,9 +1108,11 @@
             `;
 
             const versesContainer = document.getElementById('verses-container');
-            chapter.verses.forEach((verseText, index) => {
-                const verseNum = index + 1;
-                const verseId = `${book.name}-${chapterNum}-${verseNum}`;
+            const verseNumbers = Object.keys(chapter.verses).map(Number).sort((a, b) => a - b);
+            
+            verseNumbers.forEach(verseNum => {
+                const verseText = chapter.verses[verseNum];
+                const verseId = `${bookData.name}-${chapterNum}-${verseNum}`;
                 
                 const verse = document.createElement('div');
                 verse.className = 'verse';
@@ -1258,41 +1120,42 @@
                     <span class="verse-number">${verseNum}</span>
                     <span>${verseText}</span>
                     <button class="bookmark-btn ${isBookmarked(verseId) ? 'bookmarked' : ''}" 
-                        onclick="toggleBookmark('${book.name}', ${chapterNum}, ${verseNum}, \`${verseText.replace(/`/g, '\\`')}\`)">
+                        onclick="toggleBookmark('${bookData.name}', ${chapterNum}, ${verseNum}, \`${verseText.replace(/`/g, '\\`')}\`)">
                         ${isBookmarked(verseId) ? '★' : '☆'}
                     </button>
                 `;
                 versesContainer.appendChild(verse);
             });
 
-            // 네비게이션 버튼 활성화/비활성화
             updateNavigationButtons();
 
-            // 읽기 탭으로 전환
             switchTab('read');
             document.querySelectorAll('.tab')[1].click();
         }
 
-        // 장 네비게이션
-        function navigateChapter(direction) {
+        async function navigateChapter(direction) {
             if (!currentReading) return;
 
             let { bookIndex, chapterNum } = currentReading;
-            const book = bibleData.books[bookIndex];
+            const bookData = await loadBookData(bookIndex);
 
             chapterNum += direction;
 
-            // 다음/이전 책으로 이동
             if (chapterNum < 1) {
                 bookIndex--;
                 if (bookIndex >= 0) {
-                    chapterNum = bibleData.books[bookIndex].chapters.length;
+                    const prevBook = await loadBookData(bookIndex);
+                    if (prevBook) {
+                        chapterNum = prevBook.chapters.length;
+                    } else {
+                        return;
+                    }
                 } else {
                     return;
                 }
-            } else if (chapterNum > book.chapters.length) {
+            } else if (chapterNum > bookData.chapters.length) {
                 bookIndex++;
-                if (bookIndex < bibleData.books.length) {
+                if (bookIndex < booksConfig.books.length) {
                     chapterNum = 1;
                 } else {
                     return;
@@ -1302,29 +1165,25 @@
             readChapter(bookIndex, chapterNum);
         }
 
-        // 네비게이션 버튼 상태 업데이트
-        function updateNavigationButtons() {
+        async function updateNavigationButtons() {
             if (!currentReading) return;
 
             const { bookIndex, chapterNum } = currentReading;
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
 
-            // 이전 버튼
             prevBtn.disabled = (bookIndex === 0 && chapterNum === 1);
 
-            // 다음 버튼
-            const isLastBook = bookIndex === bibleData.books.length - 1;
-            const isLastChapter = chapterNum === bibleData.books[bookIndex].chapters.length;
+            const bookData = await loadBookData(bookIndex);
+            const isLastBook = bookIndex === booksConfig.books.length - 1;
+            const isLastChapter = chapterNum === bookData.chapters.length;
             nextBtn.disabled = (isLastBook && isLastChapter);
         }
 
-        // 북마크 확인
         function isBookmarked(verseId) {
             return bookmarks.some(b => b.id === verseId);
         }
 
-        // 북마크 토글
         function toggleBookmark(bookName, chapter, verse, text) {
             const verseId = `${bookName}-${chapter}-${verse}`;
             const existingIndex = bookmarks.findIndex(b => b.id === verseId);
@@ -1344,13 +1203,11 @@
 
             saveData();
             
-            // 현재 읽기 화면 다시 렌더링
             if (currentReading) {
                 readChapter(currentReading.bookIndex, currentReading.chapterNum);
             }
         }
 
-        // 북마크 렌더링
         function renderBookmarks() {
             const container = document.getElementById('bookmark-list');
             
@@ -1366,7 +1223,6 @@
 
             container.innerHTML = '';
             
-            // 날짜 역순으로 정렬
             const sortedBookmarks = [...bookmarks].sort((a, b) => 
                 new Date(b.date) - new Date(a.date)
             );
@@ -1386,7 +1242,6 @@
             });
         }
 
-        // 북마크 삭제
         function deleteBookmark(verseId) {
             if (confirm('이 북마크를 삭제하시겠습니까?')) {
                 bookmarks = bookmarks.filter(b => b.id !== verseId);
@@ -1395,27 +1250,151 @@
             }
         }
 
-        // 성경 범위 선택 변경
+        function renderCalendar() {
+            const year = currentCalendarMonth.getFullYear();
+            const month = currentCalendarMonth.getMonth();
+            
+            document.getElementById('calendar-title').textContent = 
+                `${year}년 ${month + 1}월`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            const dayHeaders = ['일', '월', '화', '수', '목', '금', '토'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+                
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const isCurrentMonth = currentDate.getMonth() === month;
+                const isToday = currentDate.getTime() === today.getTime();
+                const isExcluded = excludedDates.includes(dateStr);
+
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day';
+                if (!isCurrentMonth) cell.classList.add('other-month');
+                if (isToday) cell.classList.add('today');
+                if (isExcluded) cell.classList.add('excluded');
+                
+                cell.textContent = currentDate.getDate();
+                cell.onclick = () => toggleExcludeDate(dateStr);
+                
+                grid.appendChild(cell);
+            }
+        }
+
+        function changeMonth(direction) {
+            currentCalendarMonth.setMonth(currentCalendarMonth.getMonth() + direction);
+            renderCalendar();
+        }
+
+        function toggleExcludeDate(dateStr) {
+            const index = excludedDates.indexOf(dateStr);
+            if (index > -1) {
+                excludedDates.splice(index, 1);
+            } else {
+                excludedDates.push(dateStr);
+            }
+            excludedDates.sort();
+            saveData();
+            renderCalendar();
+            renderExcludedDates();
+        }
+
+        function renderExcludedDates() {
+            const container = document.getElementById('excluded-dates-list');
+            if (excludedDates.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#999; padding:10px;">제외된 날짜가 없습니다</div>';
+                return;
+            }
+
+            container.innerHTML = excludedDates.map(date => `
+                <span class="excluded-date-tag">
+                    ${date}
+                    <button onclick="toggleExcludeDate('${date}')">×</button>
+                </span>
+            `).join('');
+        }
+
+        function openProgressModal() {
+            if (scheduleData.length === 0) {
+                alert('먼저 스케줄을 생성해주세요.');
+                return;
+            }
+
+            const modal = document.getElementById('progress-modal');
+            const progressList = document.getElementById('progress-list');
+            
+            progressList.innerHTML = '';
+
+            scheduleData.forEach(schedule => {
+                schedule.chapters.forEach(chapter => {
+                    const key = `${chapter.book}-${chapter.chapter}`;
+                    const isCompleted = readingProgress[key] === true;
+
+                    const item = document.createElement('div');
+                    item.className = `progress-item ${isCompleted ? 'completed' : ''}`;
+                    item.innerHTML = `
+                        <div class="progress-info">
+                            <div class="progress-book">${chapter.book} ${chapter.chapter}장</div>
+                            <div class="progress-date">예정일: ${schedule.date}</div>
+                        </div>
+                        <button class="progress-toggle ${isCompleted ? 'completed' : 'incomplete'}" 
+                            onclick="toggleProgressInModal('${chapter.book}', ${chapter.chapter})">
+                            ${isCompleted ? '✓ 완료' : '미완료'}
+                        </button>
+                    `;
+                    progressList.appendChild(item);
+                });
+            });
+
+            modal.classList.add('active');
+        }
+
+        function closeProgressModal() {
+            document.getElementById('progress-modal').classList.remove('active');
+        }
+
+        function toggleProgressInModal(bookName, chapter) {
+            const key = `${bookName}-${chapter}`;
+            readingProgress[key] = !readingProgress[key];
+            saveData();
+            openProgressModal();
+            renderSchedule();
+            recalculateSchedule();
+        }
+
         document.getElementById('bible-range').addEventListener('change', function() {
             const customGroup = document.getElementById('custom-books-group');
             customGroup.style.display = this.value === 'custom' ? 'block' : 'none';
         });
 
-        // 초기화
         window.addEventListener('load', () => {
-            // 오늘 날짜를 기본값으로 설정
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('start-date').value = today;
             
-            // 1년 후를 종료 날짜로 설정
             const oneYearLater = new Date();
             oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
             document.getElementById('end-date').value = oneYearLater.toISOString().split('T')[0];
 
-            loadBibleData();
+            loadBooksConfig();
         });
 
-        // 모달 배경 클릭시 닫기
         document.getElementById('progress-modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeProgressModal();
