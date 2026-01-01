@@ -599,6 +599,58 @@
         .view-progress-btn:active {
             transform: scale(0.98);
         }
+
+        .delete-schedule-btn {
+            background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .delete-schedule-btn:active {
+            transform: scale(0.98);
+        }
+
+        .select-all-btn {
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .chapter-mark-complete {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        .chapter-mark-complete.completed {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .chapter-mark-complete:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
@@ -697,11 +749,13 @@
 
                 <div class="form-group" id="custom-books-group" style="display:none;">
                     <label>성경책 선택</label>
+                    <button class="select-all-btn" onclick="toggleAllBooks()">전체 선택/해제</button>
                     <div id="books-checkboxes" class="checkbox-group"></div>
                 </div>
 
                 <button class="btn" onclick="generateSchedule()">스케줄 생성</button>
                 <button class="view-progress-btn" onclick="openProgressModal()">📊 읽음 표시 확인 및 수정</button>
+                <button class="delete-schedule-btn" onclick="deleteSchedule()">🗑️ 스케줄 삭제</button>
             </div>
 
             <div class="schedule-list" id="schedule-list"></div>
@@ -830,7 +884,7 @@
                 const label = document.createElement('label');
                 label.className = 'checkbox-label';
                 label.innerHTML = `
-                    <input type="checkbox" value="${bookIndex}" checked> ${book.name}
+                    <input type="checkbox" value="${bookIndex}"> ${book.name}
                 `;
                 otSection.appendChild(label);
             });
@@ -845,11 +899,20 @@
                 const label = document.createElement('label');
                 label.className = 'checkbox-label';
                 label.innerHTML = `
-                    <input type="checkbox" value="${bookIndex}" checked> ${book.name}
+                    <input type="checkbox" value="${bookIndex}"> ${book.name}
                 `;
                 ntSection.appendChild(label);
             });
             container.appendChild(ntSection);
+        }
+
+        function toggleAllBooks() {
+            const checkboxes = document.querySelectorAll('#books-checkboxes input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(cb => {
+                cb.checked = !allChecked;
+            });
         }
 
         function switchTab(tabName) {
@@ -1094,13 +1157,20 @@
             if (!chapter) return;
 
             currentReading = { bookIndex, chapterNum, bookName: bookData.name };
+            const chapterKey = `${bookData.name}-${chapterNum}`;
+            const isChapterCompleted = readingProgress[chapterKey] === true;
 
             const reader = document.getElementById('bible-reader');
             reader.innerHTML = `
                 <div class="bible-header">
                     <div class="bible-title">${bookData.name} ${chapterNum}장</div>
                 </div>
-                <div id="verses-container"></div>
+                <button class="chapter-mark-complete ${isChapterCompleted ? 'completed' : ''}" 
+                    id="mark-complete-btn"
+                    onclick="toggleChapterComplete()">
+                    ${isChapterCompleted ? '✓ 읽음 완료' : '읽음 표시'}
+                </button>
+                <div id="verses-container" style="margin-top: 20px;"></div>
                 <div class="navigation-btns">
                     <button class="nav-btn" onclick="navigateChapter(-1)" id="prev-btn">이전 장</button>
                     <button class="nav-btn" onclick="navigateChapter(1)" id="next-btn">다음 장</button>
@@ -1131,6 +1201,23 @@
 
             switchTab('read');
             document.querySelectorAll('.tab')[1].click();
+        }
+
+        function toggleChapterComplete() {
+            if (!currentReading) return;
+
+            const { bookName, chapterNum, bookIndex } = currentReading;
+            const key = `${bookName}-${chapterNum}`;
+            readingProgress[key] = !readingProgress[key];
+            saveData();
+            
+            const btn = document.getElementById('mark-complete-btn');
+            const isCompleted = readingProgress[key];
+            btn.className = `chapter-mark-complete ${isCompleted ? 'completed' : ''}`;
+            btn.textContent = isCompleted ? '✓ 읽음 완료' : '읽음 표시';
+            
+            renderSchedule();
+            recalculateSchedule();
         }
 
         async function navigateChapter(direction) {
@@ -1368,6 +1455,20 @@
 
         function closeProgressModal() {
             document.getElementById('progress-modal').classList.remove('active');
+        }
+
+        function deleteSchedule() {
+            if (scheduleData.length === 0) {
+                alert('삭제할 스케줄이 없습니다.');
+                return;
+            }
+
+            if (confirm('스케줄을 삭제하시겠습니까?\n(읽음 표시와 북마크는 유지됩니다)')) {
+                scheduleData = [];
+                saveData();
+                renderSchedule();
+                alert('스케줄이 삭제되었습니다.');
+            }
         }
 
         function toggleProgressInModal(bookName, chapter) {
