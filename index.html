@@ -118,6 +118,71 @@
             gap: 5px;
         }
 
+        .book-checkbox-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .book-checkbox-label:hover {
+            background: #f0f4ff;
+        }
+
+        .book-checkbox-label input {
+            order: 2;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .book-name {
+            order: 1;
+            flex: 1;
+        }
+
+        .testament-section {
+            margin-bottom: 20px;
+        }
+
+        .testament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 5px;
+        }
+
+        .testament-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .testament-select-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 5px;
+        }
+
         .btn {
             width: 100%;
             padding: 12px;
@@ -749,8 +814,7 @@
 
                 <div class="form-group" id="custom-books-group" style="display:none;">
                     <label>성경책 선택</label>
-                    <button class="select-all-btn" onclick="toggleAllBooks()">전체 선택/해제</button>
-                    <div id="books-checkboxes" class="checkbox-group"></div>
+                    <div id="books-checkboxes"></div>
                 </div>
 
                 <button class="btn" onclick="generateSchedule()">스케줄 생성</button>
@@ -874,40 +938,59 @@
             const container = document.getElementById('books-checkboxes');
             container.innerHTML = '';
             
+            // 구약 섹션
             const otSection = document.createElement('div');
-            otSection.style.marginBottom = '15px';
-            otSection.innerHTML = '<strong style="color: #667eea; display: block; margin-bottom: 10px;">📜 구약</strong>';
-            
-            const otBooks = booksConfig.books.filter(book => book.testament === 'ot');
-            otBooks.forEach((book, idx) => {
-                const bookIndex = booksConfig.books.indexOf(book);
-                const label = document.createElement('label');
-                label.className = 'checkbox-label';
-                label.innerHTML = `
-                    <input type="checkbox" value="${bookIndex}"> ${book.name}
-                `;
-                otSection.appendChild(label);
-            });
+            otSection.className = 'testament-section';
+            otSection.innerHTML = `
+                <div class="testament-header">
+                    <div class="testament-title">📜 구약</div>
+                    <button class="testament-select-btn" onclick="toggleTestamentBooks('ot')">전체 선택/해제</button>
+                </div>
+                <div class="books-grid" id="ot-books"></div>
+            `;
             container.appendChild(otSection);
             
-            const ntSection = document.createElement('div');
-            ntSection.innerHTML = '<strong style="color: #667eea; display: block; margin-bottom: 10px;">✝️ 신약</strong>';
-            
-            const ntBooks = booksConfig.books.filter(book => book.testament === 'nt');
-            ntBooks.forEach((book, idx) => {
+            const otBooksContainer = document.getElementById('ot-books');
+            const otBooks = booksConfig.books.filter(book => book.testament === 'ot');
+            otBooks.forEach((book) => {
                 const bookIndex = booksConfig.books.indexOf(book);
                 const label = document.createElement('label');
-                label.className = 'checkbox-label';
+                label.className = 'book-checkbox-label';
                 label.innerHTML = `
-                    <input type="checkbox" value="${bookIndex}"> ${book.name}
+                    <span class="book-name">${book.name}</span>
+                    <input type="checkbox" value="${bookIndex}" data-testament="ot">
                 `;
-                ntSection.appendChild(label);
+                otBooksContainer.appendChild(label);
             });
+            
+            // 신약 섹션
+            const ntSection = document.createElement('div');
+            ntSection.className = 'testament-section';
+            ntSection.innerHTML = `
+                <div class="testament-header">
+                    <div class="testament-title">✝️ 신약</div>
+                    <button class="testament-select-btn" onclick="toggleTestamentBooks('nt')">전체 선택/해제</button>
+                </div>
+                <div class="books-grid" id="nt-books"></div>
+            `;
             container.appendChild(ntSection);
+            
+            const ntBooksContainer = document.getElementById('nt-books');
+            const ntBooks = booksConfig.books.filter(book => book.testament === 'nt');
+            ntBooks.forEach((book) => {
+                const bookIndex = booksConfig.books.indexOf(book);
+                const label = document.createElement('label');
+                label.className = 'book-checkbox-label';
+                label.innerHTML = `
+                    <span class="book-name">${book.name}</span>
+                    <input type="checkbox" value="${bookIndex}" data-testament="nt">
+                `;
+                ntBooksContainer.appendChild(label);
+            });
         }
 
-        function toggleAllBooks() {
-            const checkboxes = document.querySelectorAll('#books-checkboxes input[type="checkbox"]');
+        function toggleTestamentBooks(testament) {
+            const checkboxes = document.querySelectorAll(`#books-checkboxes input[data-testament="${testament}"]`);
             const allChecked = Array.from(checkboxes).every(cb => cb.checked);
             
             checkboxes.forEach(cb => {
@@ -949,7 +1032,7 @@
             const excludeDates = parseExcludeDates();
             const bibleRange = document.getElementById('bible-range').value;
 
-            if (!startDate || !endDate) {
+            if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
                 alert('시작 날짜와 종료 날짜를 선택하세요.');
                 return;
             }
@@ -964,6 +1047,11 @@
             if (bibleRange === 'custom') {
                 selectedBookIndices = Array.from(document.querySelectorAll('#books-checkboxes input:checked'))
                     .map(cb => parseInt(cb.value));
+                
+                if (selectedBookIndices.length === 0) {
+                    alert('최소 하나의 성경책을 선택하세요.');
+                    return;
+                }
             } else if (bibleRange === 'ot') {
                 selectedBookIndices = booksConfig.books
                     .map((book, idx) => book.testament === 'ot' ? idx : -1)
@@ -978,9 +1066,12 @@
 
             let chaptersToRead = [];
             
+            console.log('선택된 책 인덱스:', selectedBookIndices);
+            
             for (const bookIndex of selectedBookIndices) {
                 const bookData = await loadBookData(bookIndex);
-                if (bookData) {
+                if (bookData && bookData.chapters) {
+                    console.log(`${bookData.name}: ${bookData.chapters.length}장`);
                     bookData.chapters.forEach(chapter => {
                         chaptersToRead.push({
                             book: bookData.name,
@@ -991,8 +1082,55 @@
                 }
             }
 
+            console.log('총 읽을 장 수:', chaptersToRead.length);
+
+            if (chaptersToRead.length === 0) {
+                alert('읽을 성경 데이터를 불러올 수 없습니다. txt 파일들이 올바르게 업로드되었는지 확인하세요.');
+                return;
+            }
+
             const readingDates = [];
             let currentDate = new Date(startDate);
+            
+            while (currentDate <= endDate) {
+                if (isReadingDay(currentDate, selectedDays, excludeDates)) {
+                    readingDates.push(new Date(currentDate));
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            console.log('읽기 가능한 날 수:', readingDates.length);
+
+            if (readingDates.length === 0) {
+                alert('선택한 조건으로 읽을 수 있는 날이 없습니다.');
+                return;
+            }
+
+            const chaptersPerDay = Math.ceil(chaptersToRead.length / readingDates.length);
+            scheduleData = [];
+            
+            let chapterIndex = 0;
+            readingDates.forEach(date => {
+                const dayChapters = [];
+                for (let i = 0; i < chaptersPerDay && chapterIndex < chaptersToRead.length; i++) {
+                    dayChapters.push(chaptersToRead[chapterIndex++]);
+                }
+                
+                if (dayChapters.length > 0) {
+                    scheduleData.push({
+                        date: date.toISOString().split('T')[0],
+                        chapters: dayChapters,
+                        completed: false
+                    });
+                }
+            });
+
+            console.log('생성된 스케줄:', scheduleData.length, '일');
+
+            saveData();
+            renderSchedule();
+            alert(`스케줄이 생성되었습니다!\n총 ${readingDates.length}일 동안 ${chaptersToRead.length}장을 읽습니다.\n(하루 평균 ${chaptersPerDay}장)`);
+        }
             
             while (currentDate <= endDate) {
                 if (isReadingDay(currentDate, selectedDays, excludeDates)) {
@@ -1486,12 +1624,12 @@
         });
 
         window.addEventListener('load', () => {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('start-date').value = today;
+            const today = new Date();
+            document.getElementById('start-date').value = today.toISOString().split('T')[0];
             
-            const oneYearLater = new Date();
-            oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
-            document.getElementById('end-date').value = oneYearLater.toISOString().split('T')[0];
+            const sixMonthsLater = new Date();
+            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+            document.getElementById('end-date').value = sixMonthsLater.toISOString().split('T')[0];
 
             loadBooksConfig();
         });
