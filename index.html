@@ -1324,14 +1324,14 @@
     }
 
     // 샘플 성경 구절 생성 (파일이 없을 때 사용)
-    function generateSampleVerses(bookName, chapter) {
-      const titles = ['천지 창조', '빛의 창조', '궁창의 창조', '땅과 바다', '해와 달', '생물의 창조'];
-      return Array.from({length: 10}, (_, i) => ({
-        verse: i + 1,
-        title: i === 0 ? titles[Math.floor(Math.random() * titles.length)] : null,
-        text: `${bookName} ${chapter}장 ${i + 1}절의 샘플 내용입니다. 실제로는 성경 텍스트 파일에서 불러온 내용이 표시됩니다.`
-      }));
-    }
+    // function generateSampleVerses(bookName, chapter) {
+    //   const titles = ['천지 창조', '빛의 창조', '궁창의 창조', '땅과 바다', '해와 달', '생물의 창조'];
+    //   return Array.from({length: 10}, (_, i) => ({
+    //     verse: i + 1,
+    //     title: i === 0 ? titles[Math.floor(Math.random() * titles.length)] : null,
+    //     text: `${bookName} ${chapter}장 ${i + 1}절의 샘플 내용입니다. 실제로는 성경 텍스트 파일에서 불러온 내용이 표시됩니다.`
+    //   }));
+    // }
 
     function isChapterRead() {
       if (!currentSchedule) return false;
