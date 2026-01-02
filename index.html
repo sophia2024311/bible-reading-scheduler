@@ -1,913 +1,892 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성경 읽기 스케줄러</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            padding-bottom: 70px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-        }
-
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .tabs {
-            display: flex;
-            background: white;
-            border-bottom: 2px solid #e0e0e0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            background: white;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom: 3px solid #667eea;
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.3s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .schedule-setup {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .book-checkbox-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 10px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .book-checkbox-label:hover {
-            background: #f0f4ff;
-        }
-
-        .book-checkbox-label input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .testament-section {
-            margin-bottom: 20px;
-        }
-
-        .testament-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 5px;
-        }
-
-        .testament-title {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .testament-select-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid white;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .testament-select-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .books-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 5px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .calendar-container {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .calendar-nav {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .calendar-title {
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            padding: 10px 5px;
-            font-weight: 600;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .calendar-day:hover {
-            background: #f0f4ff;
-            border-color: #667eea;
-        }
-
-        .calendar-day.other-month {
-            color: #ccc;
-        }
-
-        .calendar-day.excluded {
-            background: #ff5252;
-            color: white;
-            border-color: #ff5252;
-        }
-
-        .calendar-day.today {
-            background: #e3f2fd;
-            border-color: #2196f3;
-            font-weight: 600;
-        }
-
-        .excluded-dates-list {
-            margin-top: 10px;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 5px;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-
-        .excluded-date-tag {
-            display: inline-block;
-            background: #ff5252;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            margin: 3px;
-            font-size: 12px;
-        }
-
-        .excluded-date-tag button {
-            background: none;
-            border: none;
-            color: white;
-            margin-left: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .schedule-list {
-            margin-top: 20px;
-        }
-
-        .schedule-item {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .schedule-item.today {
-            border: 2px solid #667eea;
-            background: #f0f4ff;
-        }
-
-        .schedule-item.completed {
-            opacity: 0.6;
-            background: #e8f5e9;
-        }
-
-        .schedule-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .schedule-date {
-            font-weight: 600;
-            color: #667eea;
-        }
-
-        .schedule-status {
-            font-size: 12px;
-            padding: 3px 8px;
-            border-radius: 12px;
-            background: #e0e0e0;
-        }
-
-        .schedule-status.completed {
-            background: #4caf50;
-            color: white;
-        }
-
-        .chapter-list {
-            margin-top: 10px;
-        }
-
-        .chapter-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            background: #f9f9f9;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
-
-        .chapter-item:hover {
-            background: #f0f0f0;
-        }
-
-        .chapter-checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .bible-reader {
-            padding: 20px;
-        }
-
-        .bible-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .bible-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .verse {
-            margin-bottom: 15px;
-            line-height: 1.8;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background 0.2s;
-        }
-
-        .verse:hover {
-            background: #f9f9f9;
-        }
-
-        .verse-number {
-            display: inline-block;
-            min-width: 30px;
-            font-weight: 600;
-            color: #667eea;
-            margin-right: 5px;
-        }
-
-        .bookmark-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            margin-left: 10px;
-            transition: transform 0.2s;
-        }
-
-        .bookmark-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .bookmark-btn.bookmarked {
-            color: #ffd700;
-        }
-
-        .bookmark-list {
-            padding: 20px;
-        }
-
-        .bookmark-item {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .bookmark-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .bookmark-ref {
-            font-weight: 600;
-            color: #667eea;
-        }
-
-        .bookmark-date {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .bookmark-text {
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .delete-btn {
-            background: #ff5252;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-
-        .navigation-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .nav-btn {
-            flex: 1;
-            padding: 10px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .nav-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .stats {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-        }
-
-        .stat-item {
-            flex: 1;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .progress-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .progress-modal.active {
-            display: flex;
-        }
-
-        .progress-modal-content {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .progress-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .progress-modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 28px;
-            color: #999;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            line-height: 1;
-        }
-
-        .progress-item {
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .progress-item.completed {
-            background: #e8f5e9;
-        }
-
-        .progress-info {
-            flex: 1;
-        }
-
-        .progress-book {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 3px;
-        }
-
-        .progress-date {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .progress-toggle {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .progress-toggle.completed {
-            background: #4caf50;
-            color: white;
-        }
-
-        .progress-toggle.incomplete {
-            background: #e0e0e0;
-            color: #666;
-        }
-
-        .view-progress-btn {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            transition: transform 0.2s;
-        }
-
-        .view-progress-btn:active {
-            transform: scale(0.98);
-        }
-
-        .delete-schedule-btn {
-            background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            transition: transform 0.2s;
-        }
-
-        .delete-schedule-btn:active {
-            transform: scale(0.98);
-        }
-
-        .chapter-mark-complete {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
-            transition: all 0.2s;
-        }
-
-        .chapter-mark-complete.completed {
-            background: #e0e0e0;
-            color: #666;
-        }
-
-        .chapter-mark-complete:active {
-            transform: scale(0.98);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성경 읽기 스케줄러</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .nav {
+      display: flex;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 15px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #6c757d;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .nav-btn.active {
+      color: #667eea;
+    }
+
+    .nav-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #667eea;
+    }
+
+    .content {
+      padding: 20px;
+      min-height: 400px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    .form-group input[type="date"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .weekday-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .weekday-btn {
+      flex: 1;
+      min-width: 45px;
+      padding: 10px;
+      border: 2px solid #e9ecef;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6c757d;
+      transition: all 0.3s;
+    }
+
+    .weekday-btn.selected {
+      background: #667eea;
+      border-color: #667eea;
+      color: white;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .testament-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .testament-tab {
+      flex: 1;
+      padding: 10px;
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .testament-tab.active {
+      background: #667eea;
+      border-color: #667eea;
+      color: white;
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .book-item {
+      position: relative;
+    }
+
+    .book-checkbox {
+      display: none;
+    }
+
+    .book-label {
+      display: block;
+      padding: 10px 5px;
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .book-checkbox:checked + .book-label {
+      background: #667eea;
+      border-color: #667eea;
+      color: white;
+    }
+
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .schedule-card {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #e9ecef;
+    }
+
+    .schedule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .schedule-name {
+      font-weight: 600;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .schedule-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .icon-btn {
+      padding: 5px 10px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .schedule-progress {
+      margin-top: 10px;
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .schedule-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s;
+    }
+
+    .reading-view {
+      padding: 20px;
+    }
+
+    .chapter-content {
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .verse {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .verse-number {
+      color: #667eea;
+      font-weight: 600;
+      min-width: 30px;
+    }
+
+    .verse-text {
+      flex: 1;
+    }
+
+    .verse-title {
+      font-weight: 600;
+      color: #764ba2;
+      margin-bottom: 5px;
+    }
+
+    .bookmark-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+
+    .bookmark-btn.bookmarked {
+      opacity: 1;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .exclude-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .calendar-day {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #e9ecef;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .calendar-day.selected {
+      background: #667eea;
+      color: white;
+    }
+
+    .calendar-day.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6c757d;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .chapter-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .chapter-nav select {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .read-check {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📖 성경 읽기 스케줄러</h1>
-            <p>말씀과 함께하는 매일</p>
-        </header>
-
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('schedule')">스케줄</button>
-            <button class="tab" onclick="switchTab('read')">읽기</button>
-            <button class="tab" onclick="switchTab('bookmarks')">북마크</button>
-        </div>
-
-        <div id="schedule-tab" class="tab-content active">
-            <div class="stats" id="stats">
-                <div class="stats-row">
-                    <div class="stat-item">
-                        <div class="stat-value" id="total-days">0</div>
-                        <div class="stat-label">총 일수</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="completed-days">0</div>
-                        <div class="stat-label">완료</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="remaining-days">0</div>
-                        <div class="stat-label">남은 일수</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="schedule-setup">
-                <h2 style="margin-bottom: 15px;">📅 스케줄 설정</h2>
-                
-                <div class="form-group">
-                    <label>시작 날짜</label>
-                    <input type="date" id="start-date">
-                </div>
-
-                <div class="form-group">
-                    <label>종료 날짜</label>
-                    <input type="date" id="end-date">
-                </div>
-
-                <div class="form-group">
-                    <label>읽기 요일</label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" value="0" checked> 일
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" value="1" checked> 월
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" value="2" checked> 화
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" value="3" checked> 수
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" value="4" checked> 목
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" value="5" checked> 금
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" value="6" checked> 토
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>제외할 날짜 선택</label>
-                    <div class="calendar-container">
-                        <div class="calendar-header">
-                            <button class="calendar-nav" onclick="changeMonth(-1)">◀</button>
-                            <div class="calendar-title" id="calendar-title">2025년 1월</div>
-                            <button class="calendar-nav" onclick="changeMonth(1)">▶</button>
-                        </div>
-                        <div class="calendar-grid" id="calendar-grid"></div>
-                    </div>
-                    <div class="excluded-dates-list" id="excluded-dates-list">
-                        <div style="text-align:center; color:#999; padding:10px;">제외된 날짜가 없습니다</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>읽을 성경</label>
-                    <select id="bible-range">
-                        <option value="all">전체 성경</option>
-                        <option value="ot">구약</option>
-                        <option value="nt">신약</option>
-                        <option value="custom">직접 선택</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="custom-books-group" style="display:none;">
-                    <label>성경책 선택</label>
-                    <div id="books-checkboxes"></div>
-                </div>
-
-                <button class="btn" onclick="generateSchedule()">스케줄 생성</button>
-                <button class="view-progress-btn" onclick="openProgressModal()">📊 읽음 표시 확인 및 수정</button>
-                <button class="delete-schedule-btn" onclick="deleteSchedule()">🗑️ 스케줄 삭제</button>
-            </div>
-
-            <div class="schedule-list" id="schedule-list"></div>
-        </div>
-
-        <div id="read-tab" class="tab-content">
-            <div class="bible-reader" id="bible-reader">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📖</div>
-                    <p>오늘의 성경을 읽으시려면<br>스케줄 탭에서 장을 선택하세요</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="bookmarks-tab" class="tab-content">
-            <div class="bookmark-list" id="bookmark-list"></div>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>📖 성경 읽기</h1>
+      <p>말씀으로 시작하는 하루</p>
     </div>
 
-    <div class="progress-modal" id="progress-modal">
-        <div class="progress-modal-content">
-            <div class="progress-modal-header">
-                <div class="progress-modal-title">📊 읽음 표시 관리</div>
-                <button class="close-modal" onclick="closeProgressModal()">×</button>
-            </div>
-            <div id="progress-list"></div>
-        </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="showSection('schedule')">스케줄</button>
+      <button class="nav-btn" onclick="showSection('read')">읽기</button>
+      <button class="nav-btn" onclick="showSection('bookmark')">북마크</button>
     </div>
 
-    <script>
-        // 성경책 설정을 직접 코드에 포함
-        const booksConfig = {
-  "books": [
-    { "name": "창세기", "abbr": "창", "testament": "ot", "file": "bible/1-01창세기.txt" },
-    { "name": "출애굽기", "abbr": "출", "testament": "ot", "file": "bible/1-02출애굽기.txt" },
-    { "name": "레위기", "abbr": "레", "testament": "ot", "file": "bible/1-03레위기.txt" },
-    { "name": "민수기", "abbr": "민", "testament": "ot", "file": "bible/1-04민수기.txt" },
-    { "name": "신명기", "abbr": "신", "testament": "ot", "file": "bible/1-05신명기.txt" },
-    { "name": "여호수아", "abbr": "수", "testament": "ot", "file": "bible/1-06여호수아.txt" },
-    { "name": "사사기", "abbr": "삿", "testament": "ot", "file": "bible/1-07사사기.txt" },
-    { "name": "룻기", "abbr": "룻", "testament": "ot", "file": "bible/1-08룻기.txt" },
-    { "name": "사무엘상", "abbr": "삼상", "testament": "ot", "file": "bible/1-09사무엘상.txt" },
-    { "name": "사무엘하", "abbr": "삼하", "testament": "ot", "file": "bible/1-10사무엘하.txt" },
-    { "name": "열왕기상", "abbr": "왕상", "testament": "ot", "file": "bible/1-11열왕기상.txt" },
-    { "name": "열왕기하", "abbr": "왕하", "testament": "ot", "file": "bible/1-12열왕기하.txt" },
-    { "name": "역대상", "abbr": "대상", "testament": "ot", "file": "bible/1-13역대상.txt" },
-    { "name": "역대하", "abbr": "대하", "testament": "ot", "file": "bible/1-14역대하.txt" },
-    { "name": "에스라", "abbr": "스", "testament": "ot", "file": "bible/1-15에스라.txt" },
-    { "name": "느헤미야", "abbr": "느", "testament": "ot", "file": "bible/1-16느헤미야.txt" },
-    { "name": "에스더", "abbr": "에", "testament": "ot", "file": "bible/1-17에스더.txt" },
-    { "name": "욥기", "abbr": "욥", "testament": "ot", "file": "bible/1-18욥기.txt" },
-    { "name": "시편", "abbr": "시", "testament": "ot", "file": "bible/1-19시편.txt" },
-    { "name": "잠언", "abbr": "잠", "testament": "ot", "file": "bible/1-20잠언.txt" },
-    { "name": "전도서", "abbr": "전", "testament": "ot", "file": "bible/1-21전도서.txt" },
-    { "name": "아가", "abbr": "아", "testament": "ot", "file": "bible/1-22아가.txt" },
-    { "name": "이사야", "abbr": "사", "testament": "ot", "file": "bible/1-23이사야.txt" },
-    { "name": "예레미야", "abbr": "렘", "testament": "ot", "file": "bible/1-24예레미야.txt" },
-    { "name": "예레미야애가", "abbr": "애", "testament": "ot", "file": "bible/1-25예레미야애가.txt" },
-    { "name": "에스겔", "abbr": "겔", "testament": "ot", "file": "bible/1-26에스겔.txt" },
-    { "name": "다니엘", "abbr": "단", "testament": "ot", "file": "bible/1-27다니엘.txt" },
-    { "name": "호세아", "abbr": "호", "testament": "ot", "file": "bible/1-28호세아.txt" },
-    { "name": "요엘", "abbr": "욜", "testament": "ot", "file": "bible/1-29요엘.txt" },
-    { "name": "아모스", "abbr": "암", "testament": "ot", "file": "bible/1-30아모스.txt" },
-    { "name": "오바댜", "abbr": "옵", "testament": "ot", "file": "bible/1-31오바댜.txt" },
-    { "name": "요나", "abbr": "욘", "testament": "ot", "file": "bible/1-32요나.txt" },
-    { "name": "미가", "abbr": "미", "testament": "ot", "file": "bible/1-33미가.txt" },
-    { "name": "나훔", "abbr": "나", "testament": "ot", "file": "bible/1-34나훔.txt" },
-    { "name": "하박국", "abbr": "합", "testament": "ot", "file": "bible/1-35하박국.txt" },
-    { "name": "스바냐", "abbr": "습", "testament": "ot", "file": "bible/1-36스바냐.txt" },
-    { "name": "학개", "abbr": "학", "testament": "ot", "file": "bible/1-37학개.txt" },
-    { "name": "스가랴", "abbr": "슥", "testament": "ot", "file": "bible/1-38스가랴.txt" },
-    { "name": "말라기", "abbr": "말", "testament": "ot", "file": "bible/1-39말라기.txt" },
+    <div class="content">
+      <!-- 스케줄 섹션 -->
+      <div id="schedule" class="section active">
+        <div class="form-group">
+          <label>시작 날짜</label>
+          <input type="date" id="startDate">
+        </div>
 
-    { "name": "마태복음", "abbr": "마", "testament": "nt", "file": "bible/2-01마태복음.txt" },
-    { "name": "마가복음", "abbr": "막", "testament": "nt", "file": "bible/2-02마가복음.txt" },
-    { "name": "누가복음", "abbr": "눅", "testament": "nt", "file": "bible/2-03누가복음.txt" },
-    { "name": "요한복음", "abbr": "요", "testament": "nt", "file": "bible/2-04요한복음.txt" },
-    { "name": "사도행전", "abbr": "행", "testament": "nt", "file": "bible/2-05사도행전.txt" },
-    { "name": "로마서", "abbr": "롬", "testament": "nt", "file": "bible/2-06로마서.txt" },
-    { "name": "고린도전서", "abbr": "고전", "testament": "nt", "file": "bible/2-07고린도전서.txt" },
-    { "name": "고린도후서", "abbr": "고후", "testament": "nt", "file": "bible/2-08고린도후서.txt" },
-    { "name": "갈라디아서", "abbr": "갈", "testament": "nt", "file": "bible/2-09갈라디아서.txt" },
-    { "name": "에베소서", "abbr": "엡", "testament": "nt", "file": "bible/2-10에베소서.txt" },
-    { "name": "빌립보서", "abbr": "빌", "testament": "nt", "file": "bible/2-11빌립보서.txt" },
-    { "name": "골로새서", "abbr": "골", "testament": "nt", "file": "bible/2-12골로새서.txt" },
-    { "name": "데살로니가전서", "abbr": "살전", "testament": "nt", "file": "bible/2-13데살로니가전서.txt" },
-    { "name": "데살로니가후서", "abbr": "살후", "testament": "nt", "file": "bible/2-14데살로니가후서.txt" },
-    { "name": "디모데전서", "abbr": "딤전", "testament": "nt", "file": "bible/2-15디모데전서.txt" },
-    { "name": "디모데후서", "abbr": "딤후", "testament": "nt", "file": "bible/2-16디모데후서.txt" },
-    { "name": "디도서", "abbr": "딛", "testament": "nt", "file": "bible/2-17디도서.txt" },
-    { "name": "빌레몬서", "abbr": "몬", "testament": "nt", "file": "bible/2-18빌레몬서.txt" },
-    { "name": "히브리서", "abbr": "히", "testament": "nt", "file": "bible/2-19히브리서.txt" },
-    { "name": "야고보서", "abbr": "약", "testament": "nt", "file": "bible/2-20야고보서.txt" },
-    { "name": "베드로전서", "abbr": "벧전", "testament": "nt", "file": "bible/2-21베드로전서.txt" },
-    { "name": "베드로후서", "abbr": "벧후", "testament": "nt", "file": "bible/2-22베드로후서.txt" },
-    { "name": "요한일서", "abbr": "요일", "testament": "nt", "file": "bible/2-23요한일서.txt" },
-    { "name": "요한이서", "abbr": "요이", "testament": "nt", "file": "bible/2-24요한이서.txt" },
-    { "name": "요한삼서", "abbr": "요삼", "testament": "nt", "file": "bible/2-25요한삼서.txt" },
-    { "name": "유다서", "abbr": "유", "testament": "nt", "file": "bible/2-26유다서.txt" },
-    { "name": "요한계시록", "abbr": "계", "testament": "nt", "file": "bible/2-27요한계시록.txt" }
-  ]
-}
+        <div class="form-group">
+          <label>종료 날짜</label>
+          <input type="date" id="endDate">
+        </div>
+
+        <div class="form-group">
+          <label>읽기 요일</label>
+          <div class="weekday-selector">
+            <button class="weekday-btn" data-day="0">일</button>
+            <button class="weekday-btn selected" data-day="1">월</button>
+            <button class="weekday-btn selected" data-day="2">화</button>
+            <button class="weekday-btn selected" data-day="3">수</button>
+            <button class="weekday-btn selected" data-day="4">목</button>
+            <button class="weekday-btn selected" data-day="5">금</button>
+            <button class="weekday-btn" data-day="6">토</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>제외할 날짜</label>
+          <button class="btn-secondary" onclick="openExcludeDateModal()">날짜 선택</button>
+          <div id="excludedDatesDisplay"></div>
+        </div>
+
+        <div class="form-group">
+          <label>읽을 성경</label>
+          <div class="testament-tabs">
+            <div class="testament-tab" onclick="selectTestament('ot')">구약</div>
+            <div class="testament-tab" onclick="selectTestament('nt')">신약</div>
+            <div class="testament-tab active" onclick="selectTestament('custom')">직접 선택</div>
+          </div>
+          <div id="customBooks" style="display: block;">
+            <button class="btn-secondary" onclick="selectAllBooks('ot')">구약 전체</button>
+            <button class="btn-secondary" onclick="selectAllBooks('nt')">신약 전체</button>
+            <div class="book-grid" id="bookGrid"></div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="createSchedule()">스케줄 생성</button>
+
+        <div style="margin-top: 30px;">
+          <h3 style="margin-bottom: 15px;">내 스케줄</h3>
+          <div id="scheduleList" class="schedule-list"></div>
+        </div>
+      </div>
+
+      <!-- 읽기 섹션 -->
+      <div id="read" class="section">
+        <div id="scheduleSelector" style="margin-bottom: 20px;"></div>
+        <div class="chapter-nav">
+          <select id="bookSelect" onchange="loadChapters()"></select>
+          <select id="chapterSelect" onchange="loadChapter()"></select>
+        </div>
+        <div id="readingContent"></div>
+      </div>
+
+      <!-- 북마크 섹션 -->
+      <div id="bookmark" class="section">
+        <div id="bookmarkList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 날짜 제외 모달 -->
+  <div id="excludeDateModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">제외할 날짜 선택</div>
+      <div id="excludeCalendar" class="exclude-calendar"></div>
+      <button class="btn-primary" style="margin-top: 20px;" onclick="closeExcludeDateModal()">확인</button>
+    </div>
+  </div>
+
+  <script>
+    let booksData = [];
+    let schedules = [];
+    let currentSchedule = null;
+    let excludedDates = [];
+    let selectedDays = [1, 2, 3, 4, 5];
+    let bookmarks = [];
+    let currentBook = null;
+    let currentChapter = 1;
+
+    // 초기화
+    async function init() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('startDate').value = today;
+      document.getElementById('endDate').value = today;
+
+      await loadBooksData();
+      loadFromStorage();
+      renderBookGrid();
+      renderScheduleList();
+      setupWeekdaySelector();
+      checkMidnightReschedule();
+    }
+
+    // 로컬 스토리지에서 데이터 로드
+    function loadFromStorage() {
+      const stored = localStorage.getItem('bibleSchedules');
+      if (stored) schedules = JSON.parse(stored);
+      
+      const storedBookmarks = localStorage.getItem('bibleBookmarks');
+      if (storedBookmarks) bookmarks = JSON.parse(storedBookmarks);
+      
+      const storedExcluded = localStorage.getItem('excludedDates');
+      if (storedExcluded) excludedDates = JSON.parse(storedExcluded);
+    }
+
+    // 데이터 저장
+    function saveToStorage() {
+      localStorage.setItem('bibleSchedules', JSON.stringify(schedules));
+      localStorage.setItem('bibleBookmarks', JSON.stringify(bookmarks));
+      localStorage.setItem('excludedDates', JSON.stringify(excludedDates));
+    }
+
+    // books.json 로드 (실제 파일이 없으므로 샘플 데이터)
+    async function loadBooksData() {
+      booksData = [
+        { name: "창세기", abbr: "창", testament: "ot", file: "bible/1-01창세기.txt", chapters: 50 },
+        { name: "출애굽기", abbr: "출", testament: "ot", file: "bible/1-02출애굽기.txt", chapters: 40 },
+        { name: "레위기", abbr: "레", testament: "ot", file: "bible/1-03레위기.txt", chapters: 27 },
+        { name: "민수기", abbr: "민", testament: "ot", file: "bible/1-04민수기.txt", chapters: 36 },
+        { name: "신명기", abbr: "신", testament: "ot", file: "bible/1-05신명기.txt", chapters: 34 },
+        { name: "마태복음", abbr: "마", testament: "nt", file: "bible/2-01마태복음.txt", chapters: 28 },
+        { name: "마가복음", abbr: "막", testament: "nt", file: "bible/2-02마가복음.txt", chapters: 16 },
+        { name: "누가복음", abbr: "눅", testament: "nt", file: "bible/2-03누가복음.txt", chapters: 24 },
+        { name: "요한복음", abbr: "요", testament: "nt", file: "bible/2-04요한복음.txt", chapters: 21 }
+      ];
+    }
+
+    // 책 그리드 렌더링
+    function renderBookGrid() {
+      const grid = document.getElementById('bookGrid');
+      grid.innerHTML = booksData.map((book, idx) => `
+        <div class="book-item">
+          <input type="checkbox" id="book${idx}" class="book-checkbox" data-testament="${book.testament}">
+          <label for="book${idx}" class="book-label">${book.abbr}</label>
+        </div>
+      `).join('');
+    }
+
+    // 섹션 표시
+    function showSection(section) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(section).classList.add('active');
+      event.target.classList.add('active');
+
+      if (section === 'read') {
+        renderScheduleSelector();
+        loadBookList();
+      } else if (section === 'bookmark') {
+        renderBookmarks();
+      }
+    }
+
+    // 요일 선택
+    function setupWeekdaySelector() {
+      document.querySelectorAll('.weekday-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.classList.toggle('selected');
+          const day = parseInt(this.dataset.day);
+          const idx = selectedDays.indexOf(day);
+          if (idx > -1) {
+            selectedDays.splice(idx, 1);
+          } else {
+            selectedDays.push(day);
+          }
+        });
+      });
+    }
+
+    // 성경 선택 모드
+    function selectTestament(type) {
+      document.querySelectorAll('.testament-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.querySelectorAll('.book-checkbox').forEach(cb => cb.checked = false);
+      
+      if (type === 'ot' || type === 'nt') {
+        document.querySelectorAll(`.book-checkbox[data-testament="${type}"]`).forEach(cb => cb.checked = true);
+      }
+    }
+
+    // 전체 선택
+    function selectAllBooks(testament) {
+      document.querySelectorAll(`.book-checkbox[data-testament="${testament}"]`).forEach(cb => {
+        cb.checked = true;
+      });
+    }
+
+    // 날짜 제외 모달
+    function openExcludeDateModal() {
+      const modal = document.getElementById('excludeDateModal');
+      modal.classList.add('active');
+      renderExcludeCalendar();
+    }
+
+    function closeExcludeDateModal() {
+      document.getElementById('excludeDateModal').classList.remove('active');
+      renderExcludedDates();
+    }
+
+    function renderExcludeCalendar() {
+      const calendar = document.getElementById('excludeCalendar');
+      const start = new Date(document.getElementById('startDate').value);
+      const end = new Date(document.getElementById('endDate').value);
+      
+      calendar.innerHTML = '';
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        const isExcluded = excludedDates.includes(dateStr);
+        const day = document.createElement('div');
+        day.className = 'calendar-day' + (isExcluded ? ' selected' : '');
+        day.textContent = d.getDate();
+        day.onclick = () => toggleExcludeDate(dateStr, day);
+        calendar.appendChild(day);
+      }
+    }
+
+    function toggleExcludeDate(date, element) {
+      const idx = excludedDates.indexOf(date);
+      if (idx > -1) {
+        excludedDates.splice(idx, 1);
+        element.classList.remove('selected');
+      } else {
+        excludedDates.push(date);
+        element.classList.add('selected');
+      }
+      saveToStorage();
+    }
+
+    function renderExcludedDates() {
+      const display = document.getElementById('excludedDatesDisplay');
+      if (excludedDates.length > 0) {
+        display.textContent = `제외: ${excludedDates.length}일`;
+      } else {
+        display.textContent = '';
+      }
+    }
+
+    // 스케줄 생성
+    function createSchedule() {
+      const startDate = new Date(document.getElementById('startDate').value);
+      const endDate = new Date(document.getElementById('endDate').value);
+      const selectedBooks = [];
+      
+      document.querySelectorAll('.book-checkbox:checked').forEach(cb => {
+        const idx = parseInt(cb.id.replace('book', ''));
+        selectedBooks.push(booksData[idx]);
+      });
+
+      if (selectedBooks.length === 0) {
+        alert('읽을 성경을 선택해주세요.');
+        return;
+      }
+
+      const totalChapters = selectedBooks.reduce((sum, book) => sum + book.chapters, 0);
+      const readingDays = getReadingDays(startDate, endDate);
+      
+      if (readingDays.length === 0) {
+        alert('읽기 가능한 날짜가 없습니다.');
+        return;
+      }
+
+      const chaptersPerDay = Math.ceil(totalChapters / readingDays.length);
+      const name = prompt('스케줄 이름을 입력하세요:', `${selectedBooks[0].name} 읽기`);
+      
+      if (!name) return;
+
+      const schedule = {
+        id: Date.now(),
+        name,
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        books: selectedBooks,
+        days: readingDays.map((date, idx) => ({
+          date,
+          chapters: [],
+          completed: false
+        })),
+        createdAt: new Date().toISOString()
+      };
+
+      // 장 배분
+      let bookIdx = 0;
+      let chapterIdx = 1;
+      let dayIdx = 0;
+
+      while (bookIdx < selectedBooks.length) {
+        const book = selectedBooks[bookIdx];
+        const dayPlan = schedule.days[dayIdx];
+        
+        for (let i = 0; i < chaptersPerDay && bookIdx < selectedBooks.length; i++) {
+          dayPlan.chapters.push({
+            book: book.name,
+            chapter: chapterIdx
+          });
+          
+          chapterIdx++;
+          if (chapterIdx > book.chapters) {
+            bookIdx++;
+            chapterIdx = 1;
+            if (bookIdx >= selectedBooks.length) break;
+          }
+        }
+        
+        dayIdx++;
+        if (dayIdx >= schedule.days.length) break;
+      }
+
+      schedules.push(schedule);
+      saveToStorage();
+      renderScheduleList();
+      alert('스케줄이 생성되었습니다!');
+    }
+
+    function getReadingDays(start, end) {
+      const days = [];
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        const dayOfWeek = d.getDay();
+        if (selectedDays.includes(dayOfWeek) && !excludedDates.includes(dateStr)) {
+          days.push(dateStr);
+        }
+      }
+      return days;
+    }
+
+    // 스케줄 목록 렌더링
+    function renderScheduleList() {
+      const list = document.getElementById('scheduleList');
+      if (schedules.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><p>생성된 스케줄이 없습니다</p></div>';
+        return;
+      }
+
+      list.innerHTML = schedules.map(schedule => {
+        const completed = schedule.days.filter(d => d.completed).length;
+        const total = schedule.days.length;
+        const progress = (completed / total * 100).toFixed(0);
+
+        return `
+          <div class="schedule-card">
+            <div class="schedule-header">
+              <div class="schedule-name">${schedule.name}</div>
+              <div class="schedule-actions">
+                <button class="icon-btn" onclick="editSchedule(${schedule.id})">✏️</button>
+                <button class="icon-btn" onclick="deleteSchedule(${schedule.id})">🗑️</button>
+              </div>
+            </div>
+            <div style="font-size: 13px; color: #6c757d; margin-bottom: 5px;">
+              ${schedule.startDate} ~ ${schedule.endDate}
+            </div>
+            <div style="font-size: 13px; color: #6c757d;">
+              진행률: ${completed}/${total}일 (${progress}%)
+            </div>
+            <div class="schedule-progress">
+              <div class="schedule-progress-bar" style="width: ${progress}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteSchedule(id) {
+      if (confirm('스케줄을 삭제하시겠습니까?')) {
+        schedules = schedules.filter(s => s.id !== id);
+        saveToStorage();
+        renderScheduleList();
+      }
+    }
+
+    // 스케줄 선택기
+    function renderScheduleSelector() {
+      const selector = document.getElementById('scheduleSelector');
+      if (schedules.length === 0) {
+        selector.innerHTML = '<div class="empty-state"><p>스케줄을 먼저 생성해주세요</p></div>';
+        return;
+      }
+
+      if (schedules.length === 1) {
+        currentSchedule = schedules[0];
+        selector.innerHTML = '';
+      } else {
+        selector.innerHTML = `
+          <select onchange="selectSchedule(this.value)" style="width: 100%; padding: 10px; border-radius: 10px;">
+            ${schedules.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+          </select>
+        `;
+        currentSchedule = schedules[0];
+      }
+    }
+
+    function selectSchedule(id) {
+      currentSchedule = schedules.find(s => s.id == id);
+    }
+
+    // 성경 읽기
+    function loadBookList() {
+      const select = document.getElementById('bookSelect');
+      if (!currentSchedule) return;
+
+      const books = [...new Set(currentSchedule.books.map(b => b.name))];
+      select.innerHTML = books.map(book => `<option value="${book}">${book}</option>`).join('');
+      
+      if (books.length > 0) {
+        currentBook = books[0];
+        loadChapters();
+      }
+    }
+
+    function loadChapters() {
+      const bookName = document.getElementById('bookSelect').value;
+      currentBook = bookName;
+      const book = booksData.find(b => b.name === bookName);
+      
+      if (!book) return;
+
+      const select = document.getElementById('chapterSelect');
+      select.innerHTML = Array.from({length: book.chapters}, (_, i) => 
+        `<option value="${i+1}">${i+1}장</option>`
+      ).join('');
+      
+      currentChapter = 1;
+      loadChapter();
+    }
+
+    function loadChapter() {
+      currentChapter = parseInt(document.getElementById('ch
