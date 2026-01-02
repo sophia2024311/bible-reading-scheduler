@@ -574,19 +574,90 @@
       localStorage.setItem('excludedDates', JSON.stringify(excludedDates));
     }
 
-    // books.json 로드 (실제 파일이 없으므로 샘플 데이터)
+    // books.json 로드
     async function loadBooksData() {
-      booksData = [
-        { name: "창세기", abbr: "창", testament: "ot", file: "bible/1-01창세기.txt", chapters: 50 },
-        { name: "출애굽기", abbr: "출", testament: "ot", file: "bible/1-02출애굽기.txt", chapters: 40 },
-        { name: "레위기", abbr: "레", testament: "ot", file: "bible/1-03레위기.txt", chapters: 27 },
-        { name: "민수기", abbr: "민", testament: "ot", file: "bible/1-04민수기.txt", chapters: 36 },
-        { name: "신명기", abbr: "신", testament: "ot", file: "bible/1-05신명기.txt", chapters: 34 },
-        { name: "마태복음", abbr: "마", testament: "nt", file: "bible/2-01마태복음.txt", chapters: 28 },
-        { name: "마가복음", abbr: "막", testament: "nt", file: "bible/2-02마가복음.txt", chapters: 16 },
-        { name: "누가복음", abbr: "눅", testament: "nt", file: "bible/2-03누가복음.txt", chapters: 24 },
-        { name: "요한복음", abbr: "요", testament: "nt", file: "bible/2-04요한복음.txt", chapters: 21 }
-      ];
+      try {
+        const response = await fetch('books.json');
+        if (!response.ok) {
+          throw new Error('books.json 파일을 불러올 수 없습니다');
+        }
+        const data = await response.json();
+        booksData = data.books;
+      } catch (error) {
+        console.error('books.json 로드 실패:', error);
+        // 파일이 없을 경우 기본 데이터 사용 (66권 전체)
+        booksData = [
+          // 구약 (39권)
+          { name: "창세기", abbr: "창", testament: "ot", file: "bible/1-01창세기.txt", chapters: 50 },
+          { name: "출애굽기", abbr: "출", testament: "ot", file: "bible/1-02출애굽기.txt", chapters: 40 },
+          { name: "레위기", abbr: "레", testament: "ot", file: "bible/1-03레위기.txt", chapters: 27 },
+          { name: "민수기", abbr: "민", testament: "ot", file: "bible/1-04민수기.txt", chapters: 36 },
+          { name: "신명기", abbr: "신", testament: "ot", file: "bible/1-05신명기.txt", chapters: 34 },
+          { name: "여호수아", abbr: "수", testament: "ot", file: "bible/1-06여호수아.txt", chapters: 24 },
+          { name: "사사기", abbr: "삿", testament: "ot", file: "bible/1-07사사기.txt", chapters: 21 },
+          { name: "룻기", abbr: "룻", testament: "ot", file: "bible/1-08룻기.txt", chapters: 4 },
+          { name: "사무엘상", abbr: "삼상", testament: "ot", file: "bible/1-09사무엘상.txt", chapters: 31 },
+          { name: "사무엘하", abbr: "삼하", testament: "ot", file: "bible/1-10사무엘하.txt", chapters: 24 },
+          { name: "열왕기상", abbr: "왕상", testament: "ot", file: "bible/1-11열왕기상.txt", chapters: 22 },
+          { name: "열왕기하", abbr: "왕하", testament: "ot", file: "bible/1-12열왕기하.txt", chapters: 25 },
+          { name: "역대상", abbr: "대상", testament: "ot", file: "bible/1-13역대상.txt", chapters: 29 },
+          { name: "역대하", abbr: "대하", testament: "ot", file: "bible/1-14역대하.txt", chapters: 36 },
+          { name: "에스라", abbr: "스", testament: "ot", file: "bible/1-15에스라.txt", chapters: 10 },
+          { name: "느헤미야", abbr: "느", testament: "ot", file: "bible/1-16느헤미야.txt", chapters: 13 },
+          { name: "에스더", abbr: "에", testament: "ot", file: "bible/1-17에스더.txt", chapters: 10 },
+          { name: "욥기", abbr: "욥", testament: "ot", file: "bible/1-18욥기.txt", chapters: 42 },
+          { name: "시편", abbr: "시", testament: "ot", file: "bible/1-19시편.txt", chapters: 150 },
+          { name: "잠언", abbr: "잠", testament: "ot", file: "bible/1-20잠언.txt", chapters: 31 },
+          { name: "전도서", abbr: "전", testament: "ot", file: "bible/1-21전도서.txt", chapters: 12 },
+          { name: "아가", abbr: "아", testament: "ot", file: "bible/1-22아가.txt", chapters: 8 },
+          { name: "이사야", abbr: "사", testament: "ot", file: "bible/1-23이사야.txt", chapters: 66 },
+          { name: "예레미야", abbr: "렘", testament: "ot", file: "bible/1-24예레미야.txt", chapters: 52 },
+          { name: "예레미야애가", abbr: "애", testament: "ot", file: "bible/1-25예레미야애가.txt", chapters: 5 },
+          { name: "에스겔", abbr: "겔", testament: "ot", file: "bible/1-26에스겔.txt", chapters: 48 },
+          { name: "다니엘", abbr: "단", testament: "ot", file: "bible/1-27다니엘.txt", chapters: 12 },
+          { name: "호세아", abbr: "호", testament: "ot", file: "bible/1-28호세아.txt", chapters: 14 },
+          { name: "요엘", abbr: "욜", testament: "ot", file: "bible/1-29요엘.txt", chapters: 3 },
+          { name: "아모스", abbr: "암", testament: "ot", file: "bible/1-30아모스.txt", chapters: 9 },
+          { name: "오바댜", abbr: "옵", testament: "ot", file: "bible/1-31오바댜.txt", chapters: 1 },
+          { name: "요나", abbr: "욘", testament: "ot", file: "bible/1-32요나.txt", chapters: 4 },
+          { name: "미가", abbr: "미", testament: "ot", file: "bible/1-33미가.txt", chapters: 7 },
+          { name: "나훔", abbr: "나", testament: "ot", file: "bible/1-34나훔.txt", chapters: 3 },
+          { name: "하박국", abbr: "합", testament: "ot", file: "bible/1-35하박국.txt", chapters: 3 },
+          { name: "스바냐", abbr: "습", testament: "ot", file: "bible/1-36스바냐.txt", chapters: 3 },
+          { name: "학개", abbr: "학", testament: "ot", file: "bible/1-37학개.txt", chapters: 2 },
+          { name: "스가랴", abbr: "슥", testament: "ot", file: "bible/1-38스가랴.txt", chapters: 14 },
+          { name: "말라기", abbr: "말", testament: "ot", file: "bible/1-39말라기.txt", chapters: 4 },
+          
+          // 신약 (27권)
+          { name: "마태복음", abbr: "마", testament: "nt", file: "bible/2-01마태복음.txt", chapters: 28 },
+          { name: "마가복음", abbr: "막", testament: "nt", file: "bible/2-02마가복음.txt", chapters: 16 },
+          { name: "누가복음", abbr: "눅", testament: "nt", file: "bible/2-03누가복음.txt", chapters: 24 },
+          { name: "요한복음", abbr: "요", testament: "nt", file: "bible/2-04요한복음.txt", chapters: 21 },
+          { name: "사도행전", abbr: "행", testament: "nt", file: "bible/2-05사도행전.txt", chapters: 28 },
+          { name: "로마서", abbr: "롬", testament: "nt", file: "bible/2-06로마서.txt", chapters: 16 },
+          { name: "고린도전서", abbr: "고전", testament: "nt", file: "bible/2-07고린도전서.txt", chapters: 16 },
+          { name: "고린도후서", abbr: "고후", testament: "nt", file: "bible/2-08고린도후서.txt", chapters: 13 },
+          { name: "갈라디아서", abbr: "갈", testament: "nt", file: "bible/2-09갈라디아서.txt", chapters: 6 },
+          { name: "에베소서", abbr: "엡", testament: "nt", file: "bible/2-10에베소서.txt", chapters: 6 },
+          { name: "빌립보서", abbr: "빌", testament: "nt", file: "bible/2-11빌립보서.txt", chapters: 4 },
+          { name: "골로새서", abbr: "골", testament: "nt", file: "bible/2-12골로새서.txt", chapters: 4 },
+          { name: "데살로니가전서", abbr: "살전", testament: "nt", file: "bible/2-13데살로니가전서.txt", chapters: 5 },
+          { name: "데살로니가후서", abbr: "살후", testament: "nt", file: "bible/2-14데살로니가후서.txt", chapters: 3 },
+          { name: "디모데전서", abbr: "딤전", testament: "nt", file: "bible/2-15디모데전서.txt", chapters: 6 },
+          { name: "디모데후서", abbr: "딤후", testament: "nt", file: "bible/2-16디모데후서.txt", chapters: 4 },
+          { name: "디도서", abbr: "딛", testament: "nt", file: "bible/2-17디도서.txt", chapters: 3 },
+          { name: "빌레몬서", abbr: "몬", testament: "nt", file: "bible/2-18빌레몬서.txt", chapters: 1 },
+          { name: "히브리서", abbr: "히", testament: "nt", file: "bible/2-19히브리서.txt", chapters: 13 },
+          { name: "야고보서", abbr: "약", testament: "nt", file: "bible/2-20야고보서.txt", chapters: 5 },
+          { name: "베드로전서", abbr: "벧전", testament: "nt", file: "bible/2-21베드로전서.txt", chapters: 5 },
+          { name: "베드로후서", abbr: "벧후", testament: "nt", file: "bible/2-22베드로후서.txt", chapters: 3 },
+          { name: "요한1서", abbr: "요일", testament: "nt", file: "bible/2-23요한1서.txt", chapters: 5 },
+          { name: "요한2서", abbr: "요이", testament: "nt", file: "bible/2-24요한2서.txt", chapters: 1 },
+          { name: "요한3서", abbr: "요삼", testament: "nt", file: "bible/2-25요한3서.txt", chapters: 1 },
+          { name: "유다서", abbr: "유", testament: "nt", file: "bible/2-26유다서.txt", chapters: 1 },
+          { name: "요한계시록", abbr: "계", testament: "nt", file: "bible/2-27요한계시록.txt", chapters: 22 }
+        ];
+      }
     }
 
     // 책 그리드 렌더링
