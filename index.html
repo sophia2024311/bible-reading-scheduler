@@ -452,6 +452,7 @@
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
+      align-items: center;
     }
 
     .chapter-nav select {
@@ -460,6 +461,90 @@
       border: 2px solid #e9ecef;
       border-radius: 10px;
       font-size: 14px;
+    }
+
+    .nav-arrow {
+      width: 40px;
+      height: 40px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .nav-arrow:hover {
+      background: #5568d3;
+    }
+
+    .nav-arrow:active {
+      transform: scale(0.95);
+    }
+
+    .progress-day {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #e9ecef;
+    }
+
+    .progress-day.completed {
+      border-color: #28a745;
+      background: #f1f9f3;
+    }
+
+    .progress-day.missed {
+      border-color: #dc3545;
+      background: #fef1f2;
+    }
+
+    .progress-day.upcoming {
+      border-color: #6c757d;
+      background: #f8f9fa;
+    }
+
+    .progress-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-date {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .progress-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .progress-status.completed {
+      background: #28a745;
+      color: white;
+    }
+
+    .progress-status.missed {
+      background: #dc3545;
+      color: white;
+    }
+
+    .progress-status.upcoming {
+      background: #6c757d;
+      color: white;
+    }
+
+    .progress-chapters {
+      font-size: 13px;
+      color: #495057;
+      line-height: 1.6;
     }
 
     .read-check {
@@ -494,6 +579,7 @@
     <div class="nav">
       <button class="nav-btn active" onclick="showSection('schedule')">스케줄</button>
       <button class="nav-btn" onclick="showSection('read')">읽기</button>
+      <button class="nav-btn" onclick="showSection('progress')">진행상황</button>
       <button class="nav-btn" onclick="showSection('bookmark')">북마크</button>
     </div>
 
@@ -555,10 +641,18 @@
       <div id="read" class="section">
         <div id="scheduleSelector" style="margin-bottom: 20px;"></div>
         <div class="chapter-nav">
+          <button class="nav-arrow" onclick="prevChapter()">◀</button>
           <select id="bookSelect" onchange="loadChapters()"></select>
           <select id="chapterSelect" onchange="loadChapter()"></select>
+          <button class="nav-arrow" onclick="nextChapter()">▶</button>
         </div>
         <div id="readingContent"></div>
+      </div>
+
+      <!-- 진행상황 섹션 -->
+      <div id="progress" class="section">
+        <div id="progressScheduleSelector" style="margin-bottom: 20px;"></div>
+        <div id="progressCalendar"></div>
       </div>
 
       <!-- 북마크 섹션 -->
@@ -712,8 +806,7 @@
       grid.innerHTML = booksData.map((book, idx) => `
         <div class="book-item">
           <input type="checkbox" id="book${idx}" class="book-checkbox" data-testament="${book.testament}">
-          <label for="book${idx}" class="book-label">${book.name}</label>
-        </div>
+          <label for="book${idx}" class="book-label">${book.name/label>>        </div>
       `).join('');
     }
 
@@ -730,6 +823,9 @@
         loadBookList();
       } else if (section === 'bookmark') {
         renderBookmarks();
+      } else if (section === 'progress') {
+        renderProgressScheduleSelector();
+        renderProgressCalendar();
       }
     }
 
@@ -938,7 +1034,8 @@
         for (let i = 0; i < chaptersPerDay && bookIdx < selectedBooks.length; i++) {
           dayPlan.chapters.push({
             book: book.name,
-            chapter: chapterIdx
+            chapter: chapterIdx,
+            read: false
           });
           
           chapterIdx++;
@@ -1111,24 +1208,171 @@
 
     function isChapterRead() {
       if (!currentSchedule) return false;
-      return currentSchedule.days.some(day => 
-        day.chapters.some(ch => ch.book === currentBook && ch.chapter === currentChapter && day.completed)
-      );
+      
+      // 현재 장이 어느 날짜에 읽을 계획인지 찾기
+      for (const day of currentSchedule.days) {
+        const chapter = day.chapters.find(
+          ch => ch.book === currentBook && ch.chapter === currentChapter
+        );
+        if (chapter) {
+          return chapter.read || false;
+        }
+      }
+      return false;
+    }
+
+    // 이전 장으로 이동
+    function prevChapter() {
+      const book = booksData.find(b => b.name === currentBook);
+      if (!book) return;
+
+      if (currentChapter > 1) {
+        currentChapter--;
+        document.getElementById('chapterSelect').value = currentChapter;
+        loadChapter();
+      } else {
+        // 이전 책의 마지막 장으로
+        const currentBookIdx = booksData.findIndex(b => b.name === currentBook);
+        if (currentBookIdx > 0) {
+          const prevBook = booksData[currentBookIdx - 1];
+          currentBook = prevBook.name;
+          currentChapter = prevBook.chapters;
+          
+          document.getElementById('bookSelect').value = currentBook;
+          loadChapters();
+        }
+      }
+    }
+
+    // 다음 장으로 이동
+    function nextChapter() {
+      const book = booksData.find(b => b.name === currentBook);
+      if (!book) return;
+
+      if (currentChapter < book.chapters) {
+        currentChapter++;
+        document.getElementById('chapterSelect').value = currentChapter;
+        loadChapter();
+      } else {
+        // 다음 책의 첫 장으로
+        const currentBookIdx = booksData.findIndex(b => b.name === currentBook);
+        if (currentBookIdx < booksData.length - 1) {
+          const nextBook = booksData[currentBookIdx + 1];
+          currentBook = nextBook.name;
+          currentChapter = 1;
+          
+          document.getElementById('bookSelect').value = currentBook;
+          loadChapters();
+        }
+      }
+    }
+
+    // 진행상황 스케줄 선택기
+    function renderProgressScheduleSelector() {
+      const selector = document.getElementById('progressScheduleSelector');
+      if (schedules.length === 0) {
+        selector.innerHTML = '<div class="empty-state"><p>스케줄을 먼저 생성해주세요</p></div>';
+        return;
+      }
+
+      if (schedules.length === 1) {
+        currentSchedule = schedules[0];
+        selector.innerHTML = `<h3>${currentSchedule.name}</h3>`;
+      } else {
+        selector.innerHTML = `
+          <select onchange="selectProgressSchedule(this.value)" style="width: 100%; padding: 10px; border-radius: 10px;">
+            ${schedules.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+          </select>
+        `;
+        currentSchedule = schedules[0];
+      }
+    }
+
+    function selectProgressSchedule(id) {
+      currentSchedule = schedules.find(s => s.id == id);
+      renderProgressCalendar();
+    }
+
+    // 진행상황 달력 렌더링
+    function renderProgressCalendar() {
+      const container = document.getElementById('progressCalendar');
+      if (!currentSchedule) {
+        container.innerHTML = '<div class="empty-state"><p>스케줄을 선택해주세요</p></div>';
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+
+      container.innerHTML = currentSchedule.days.map(day => {
+        const dayDate = new Date(day.date);
+        const isToday = day.date === today;
+        const isPast = day.date < today;
+        const isFuture = day.date > today;
+        
+        let statusClass = 'upcoming';
+        let statusText = '예정';
+        
+        if (isPast || isToday) {
+          if (day.completed) {
+            statusClass = 'completed';
+            statusText = '완료';
+          } else {
+            statusClass = 'missed';
+            statusText = '미완료';
+          }
+        }
+
+        const chaptersText = day.chapters.map(ch => {
+          const readMark = ch.read ? '✓ ' : '';
+          return `${readMark}${ch.book} ${ch.chapter}장`;
+        }).join(', ');
+
+        const dateText = `${dayDate.getMonth() + 1}월 ${dayDate.getDate()}일 (${['일','월','화','수','목','금','토'][dayDate.getDay()]})`;
+
+        return `
+          <div class="progress-day ${statusClass}">
+            <div class="progress-day-header">
+              <div class="progress-date">${dateText}</div>
+              <div class="progress-status ${statusClass}">${statusText}</div>
+            </div>
+            <div class="progress-chapters">${chaptersText}</div>
+          </div>
+        `;
+      }).join('');
     }
 
     function markChapterRead(checked) {
       if (!currentSchedule) return;
       
       const today = new Date().toISOString().split('T')[0];
-      const todayPlan = currentSchedule.days.find(d => d.date === today);
+      
+      // 현재 읽고 있는 장이 오늘 일정에 있는지 확인
+      const todayPlan = currentSchedule.days.find(d => {
+        return d.chapters.some(ch => ch.book === currentBook && ch.chapter === currentChapter);
+      });
       
       if (todayPlan) {
-        todayPlan.completed = checked;
+        // 해당 장을 읽음 처리
+        const chapterIndex = todayPlan.chapters.findIndex(
+          ch => ch.book === currentBook && ch.chapter === currentChapter
+        );
+        
+        if (chapterIndex > -1) {
+          todayPlan.chapters[chapterIndex].read = checked;
+        }
+        
+        // 모든 장을 읽었는지 확인
+        const allRead = todayPlan.chapters.every(ch => ch.read);
+        todayPlan.completed = allRead;
+        
         saveToStorage();
         renderScheduleList();
         
+        // 읽음 표시를 하면 다음 장으로 자동 이동
         if (checked) {
-          rescheduleRemaining();
+          setTimeout(() => {
+            nextChapter();
+          }, 500);
         }
       }
     }
