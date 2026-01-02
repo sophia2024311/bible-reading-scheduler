@@ -889,4 +889,207 @@
     }
 
     function loadChapter() {
-      currentChapter = parseInt(document.getElementById('ch
+      currentChapter = parseInt(document.getElementById('chapterSelect').value);
+      
+      // 샘플 성경 본문 (실제로는 파일에서 로드)
+      const sampleVerses = [
+        { verse: 1, title: "천지 창조", text: "태초에 하나님이 천지를 창조하시니라" },
+        { verse: 2, text: "땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 영은 수면 위에 운행하시니라" },
+        { verse: 3, text: "하나님이 이르시되 빛이 있으라 하시니 빛이 있었고" }
+      ];
+
+      const content = document.getElementById('readingContent');
+      const bookmarkIds = bookmarks.map(b => `${currentBook}-${currentChapter}-${b.verse}`);
+      
+      content.innerHTML = `
+        <div class="chapter-content">
+          ${sampleVerses.map(v => `
+            <div class="verse">
+              <div class="verse-number">${v.verse}</div>
+              <div style="flex: 1;">
+                ${v.title ? `<div class="verse-title">&lt;${v.title}&gt;</div>` : ''}
+                <div class="verse-text">${v.text}</div>
+              </div>
+              <button class="bookmark-btn ${bookmarkIds.includes(`${currentBook}-${currentChapter}-${v.verse}`) ? 'bookmarked' : ''}" 
+                      onclick="toggleBookmark(${v.verse})">
+                ⭐
+              </button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="read-check">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="readComplete" ${isChapterRead() ? 'checked' : ''} 
+                   onchange="markChapterRead(this.checked)">
+            <label for="readComplete">이 장을 읽었습니다</label>
+          </div>
+        </div>
+      `;
+    }
+
+    function isChapterRead() {
+      if (!currentSchedule) return false;
+      return currentSchedule.days.some(day => 
+        day.chapters.some(ch => ch.book === currentBook && ch.chapter === currentChapter && day.completed)
+      );
+    }
+
+    function markChapterRead(checked) {
+      if (!currentSchedule) return;
+      
+      const today = new Date().toISOString().split('T')[0];
+      const todayPlan = currentSchedule.days.find(d => d.date === today);
+      
+      if (todayPlan) {
+        todayPlan.completed = checked;
+        saveToStorage();
+        renderScheduleList();
+        
+        if (checked) {
+          rescheduleRemaining();
+        }
+      }
+    }
+
+    function toggleBookmark(verse) {
+      const id = `${currentBook}-${currentChapter}-${verse}`;
+      const idx = bookmarks.findIndex(b => `${b.book}-${b.chapter}-${b.verse}` === id);
+      
+      if (idx > -1) {
+        bookmarks.splice(idx, 1);
+      } else {
+        bookmarks.push({
+          book: currentBook,
+          chapter: currentChapter,
+          verse,
+          schedule: currentSchedule?.name || '없음',
+          date: new Date().toISOString().split('T')[0]
+        });
+      }
+      
+      saveToStorage();
+      loadChapter();
+    }
+
+    function renderBookmarks() {
+      const list = document.getElementById('bookmarkList');
+      
+      if (bookmarks.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⭐</div><p>저장된 북마크가 없습니다</p></div>';
+        return;
+      }
+
+      list.innerHTML = bookmarks.map((bm, idx) => `
+        <div class="schedule-card">
+          <div style="font-weight: 600; margin-bottom: 8px;">${bm.book} ${bm.chapter}:${bm.verse}</div>
+          <div style="font-size: 13px; color: #6c757d; margin-bottom: 5px;">스케줄: ${bm.schedule}</div>
+          <div style="font-size: 13px; color: #6c757d;">날짜: ${bm.date}</div>
+          <button class="icon-btn" style="margin-top: 10px;" onclick="removeBookmark(${idx})">삭제</button>
+        </div>
+      `).join('');
+    }
+
+    function removeBookmark(idx) {
+      bookmarks.splice(idx, 1);
+      saveToStorage();
+      renderBookmarks();
+    }
+
+    // 자동 스케줄 재편성
+    function rescheduleRemaining() {
+      if (!currentSchedule) return;
+      
+      const today = new Date().toISOString().split('T')[0];
+      const todayIdx = currentSchedule.days.findIndex(d => d.date === today);
+      
+      if (todayIdx === -1) return;
+
+      // 오늘까지 읽지 않은 장들 수집
+      const unreadChapters = [];
+      for (let i = 0; i <= todayIdx; i++) {
+        const day = currentSchedule.days[i];
+        if (!day.completed) {
+          unreadChapters.push(...day.chapters);
+        }
+      }
+
+      // 남은 날짜에 재배분
+      const remainingDays = currentSchedule.days.slice(todayIdx + 1);
+      if (remainingDays.length === 0) return;
+
+      const chaptersPerDay = Math.ceil(unreadChapters.length / remainingDays.length);
+      let chapterIdx = 0;
+
+      remainingDays.forEach(day => {
+        const additionalChapters = unreadChapters.slice(chapterIdx, chapterIdx + chaptersPerDay);
+        day.chapters = [...day.chapters, ...additionalChapters];
+        chapterIdx += chaptersPerDay;
+      });
+
+      saveToStorage();
+    }
+
+    // 자정 체크
+    function checkMidnightReschedule() {
+      const lastCheck = localStorage.getItem('lastMidnightCheck');
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (lastCheck !== today) {
+        schedules.forEach(schedule => {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          
+          const yesterdayPlan = schedule.days.find(d => d.date === yesterdayStr);
+          if (yesterdayPlan && !yesterdayPlan.completed) {
+            rescheduleFromYesterday(schedule, yesterdayStr);
+          }
+        });
+        
+        localStorage.setItem('lastMidnightCheck', today);
+        saveToStorage();
+      }
+
+      // 다음 자정까지 대기
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      const timeUntilMidnight = tomorrow - now;
+      
+      setTimeout(() => {
+        checkMidnightReschedule();
+      }, timeUntilMidnight);
+    }
+
+    function rescheduleFromYesterday(schedule, yesterday) {
+      const yesterdayIdx = schedule.days.findIndex(d => d.date === yesterday);
+      if (yesterdayIdx === -1) return;
+
+      const unreadChapters = schedule.days[yesterdayIdx].chapters;
+      const remainingDays = schedule.days.slice(yesterdayIdx + 1);
+      
+      if (remainingDays.length === 0) return;
+
+      const chaptersPerDay = Math.ceil(unreadChapters.length / remainingDays.length);
+      let chapterIdx = 0;
+
+      remainingDays.forEach(day => {
+        const additionalChapters = unreadChapters.slice(chapterIdx, chapterIdx + chaptersPerDay);
+        day.chapters = [...day.chapters, ...additionalChapters];
+        chapterIdx += chaptersPerDay;
+      });
+    }
+
+    function editSchedule(id) {
+      const schedule = schedules.find(s => s.id === id);
+      if (!schedule) return;
+      
+      alert('스케줄 편집 기능은 각 날짜의 읽음 표시를 통해 진행 상황을 관리할 수 있습니다.');
+    }
+
+    // 페이지 로드 시 초기화
+    init();
+  </script>
+</body>
+</html>
