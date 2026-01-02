@@ -1220,10 +1220,14 @@
         if (!response.ok) {
           throw new Error('파일을 불러올 수 없습니다.');
         }
-        
-        const buffer = await response.arrayBuffer();
-        const decoder = new TextDecoder('utf-8');
-        const text = decoder.decode(buffer);
+        try {
+          const decoder = new TextDecoder('euc-kr');
+          text = decoder.decode(buffer);
+        } catch (e) {
+          // 실패 시 UTF-8로 시도
+          const decoder = new TextDecoder('utf-8');
+          text = decoder.decode(buffer);
+        }
         
         // 텍스트 파싱
         const verses = parseBibleText(text, bookName, chapter);
