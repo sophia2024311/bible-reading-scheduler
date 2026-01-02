@@ -806,7 +806,8 @@
       grid.innerHTML = booksData.map((book, idx) => `
         <div class="book-item">
           <input type="checkbox" id="book${idx}" class="book-checkbox" data-testament="${book.testament}">
-          <label for="book${idx}" class="book-label">${book.name/label>>        </div>
+          <label for="book${idx}" class="book-label">${book.abbr}</label>
+        </div>
       `).join('');
     }
 
