@@ -366,29 +366,75 @@
     }
 
     .exclude-calendar {
+      margin-top: 15px;
+    }
+
+    .calendar-month {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .calendar-month-header {
+      font-weight: 600;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .calendar-weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 5px;
-      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    .calendar-weekday {
+      padding: 5px;
+      text-align: center;
+      font-size: 11px;
+      color: #6c757d;
+      font-weight: 600;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
     }
 
     .calendar-day {
-      padding: 8px;
+      padding: 10px;
       text-align: center;
       border: 1px solid #e9ecef;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 13px;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .calendar-day:hover {
+      background: #f8f9fa;
     }
 
     .calendar-day.selected {
       background: #667eea;
+      border-color: #667eea;
       color: white;
     }
 
     .calendar-day.disabled {
       opacity: 0.3;
       cursor: not-allowed;
+      background: #f8f9fa;
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.3;
+      cursor: default;
     }
 
     .empty-state {
@@ -740,14 +786,79 @@
       const end = new Date(document.getElementById('endDate').value);
       
       calendar.innerHTML = '';
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const dateStr = d.toISOString().split('T')[0];
-        const isExcluded = excludedDates.includes(dateStr);
-        const day = document.createElement('div');
-        day.className = 'calendar-day' + (isExcluded ? ' selected' : '');
-        day.textContent = d.getDate();
-        day.onclick = () => toggleExcludeDate(dateStr, day);
-        calendar.appendChild(day);
+      
+      // 시작월부터 종료월까지 반복
+      let currentDate = new Date(start.getFullYear(), start.getMonth(), 1);
+      const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+      
+      while (currentDate <= endMonth) {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        // 월 컨테이너 생성
+        const monthDiv = document.createElement('div');
+        monthDiv.className = 'calendar-month';
+        
+        // 월 헤더
+        const monthHeader = document.createElement('div');
+        monthHeader.className = 'calendar-month-header';
+        monthHeader.textContent = `${year}년 ${month + 1}월`;
+        monthDiv.appendChild(monthHeader);
+        
+        // 요일 헤더
+        const weekdaysDiv = document.createElement('div');
+        weekdaysDiv.className = 'calendar-weekdays';
+        ['일', '월', '화', '수', '목', '금', '토'].forEach(day => {
+          const dayDiv = document.createElement('div');
+          dayDiv.className = 'calendar-weekday';
+          dayDiv.textContent = day;
+          weekdaysDiv.appendChild(dayDiv);
+        });
+        monthDiv.appendChild(weekdaysDiv);
+        
+        // 날짜 그리드
+        const daysDiv = document.createElement('div');
+        daysDiv.className = 'calendar-days';
+        
+        // 첫 날의 요일 구하기
+        const firstDay = new Date(year, month, 1).getDay();
+        
+        // 이전 달의 빈 칸
+        for (let i = 0; i < firstDay; i++) {
+          const emptyDiv = document.createElement('div');
+          emptyDiv.className = 'calendar-day other-month';
+          daysDiv.appendChild(emptyDiv);
+        }
+        
+        // 현재 달의 날짜들
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        for (let day = 1; day <= lastDate; day++) {
+          const dateObj = new Date(year, month, day);
+          const dateStr = dateObj.toISOString().split('T')[0];
+          
+          const dayDiv = document.createElement('div');
+          dayDiv.className = 'calendar-day';
+          dayDiv.textContent = day;
+          
+          // 범위 내 날짜만 선택 가능
+          if (dateObj >= start && dateObj <= end) {
+            const isExcluded = excludedDates.includes(dateStr);
+            if (isExcluded) {
+              dayDiv.classList.add('selected');
+            }
+            dayDiv.onclick = () => toggleExcludeDate(dateStr, dayDiv);
+          } else {
+            dayDiv.classList.add('disabled');
+          }
+          
+          daysDiv.appendChild(dayDiv);
+        }
+        
+        monthDiv.appendChild(daysDiv);
+        calendar.appendChild(monthDiv);
+        
+        // 다음 달로
+        currentDate.setMonth(currentDate.getMonth() + 1);
       }
     }
 
