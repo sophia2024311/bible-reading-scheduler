@@ -1323,22 +1323,22 @@
       `;
     }
 
-    // 샘플 성경 구절 생성 (파일이 없을 때 사용)
-    function generateSampleVerses(bookName, chapter) {
-            // 1. 파일 읽기
-      const response = await fetch(book.file); // 예: "bible/1-01창세기.txt"
-      const buffer = await response.arrayBuffer();
+    // // 샘플 성경 구절 생성 (파일이 없을 때 사용)
+    // function generateSampleVerses(bookName, chapter) {
+    //         // 1. 파일 읽기
+    //   const response = await fetch(book.file); // 예: "bible/1-01창세기.txt"
+    //   const buffer = await response.arrayBuffer();
       
-      // 2. EUC-KR 인코딩으로 디코딩
-      const decoder = new TextDecoder('euc-kr');
-      const text = decoder.decode(buffer);
+    //   // 2. EUC-KR 인코딩으로 디코딩
+    //   const decoder = new TextDecoder('euc-kr');
+    //   const text = decoder.decode(buffer);
       
-      // 3. 텍스트 파싱
-      const verses = parseBibleText(text, bookName, chapter);
+    //   // 3. 텍스트 파싱
+    //   const verses = parseBibleText(text, bookName, chapter);
       
-      // 4. 화면에 표시
-      renderBibleContent(verses);
-    }
+    //   // 4. 화면에 표시
+    //   renderBibleContent(verses);
+    // }
 
     function isChapterRead() {
       if (!currentSchedule) return false;
