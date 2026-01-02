@@ -806,7 +806,7 @@
       grid.innerHTML = booksData.map((book, idx) => `
         <div class="book-item">
           <input type="checkbox" id="book${idx}" class="book-checkbox" data-testament="${book.testament}">
-          <label for="book${idx}" class="book-label">${book.abbr}</label>
+          <label for="book${idx}" class="book-label">${book.name}</label>
         </div>
       `).join('');
     }
@@ -1004,7 +1004,13 @@
         return;
       }
 
-      const chaptersPerDay = Math.ceil(totalChapters / readingDays.length);
+      // 하루 1장씩 읽어도 기간보다 장수가 적은 경우
+      if (totalChapters < readingDays.length) {
+        const earlyFinish = confirm(`선택한 성경은 총 ${totalChapters}장이고, 읽기 가능한 날은 ${readingDays.length}일입니다.\n매일 1장씩 읽으면 ${totalChapters}일에 완독됩니다.\n계속하시겠습니까?`);
+        if (!earlyFinish) return;
+      }
+
+      const chaptersPerDay = Math.max(1, Math.ceil(totalChapters / readingDays.length));
       const name = prompt('스케줄 이름을 입력하세요:', `${selectedBooks[0].name} 읽기`);
       
       if (!name) return;
@@ -1023,32 +1029,37 @@
         createdAt: new Date().toISOString()
       };
 
-      // 장 배분
+      // 장 배분 - 모든 날에 고르게 분배
       let bookIdx = 0;
       let chapterIdx = 1;
-      let dayIdx = 0;
+      let totalAssigned = 0;
 
-      while (bookIdx < selectedBooks.length) {
-        const book = selectedBooks[bookIdx];
+      for (let dayIdx = 0; dayIdx < schedule.days.length && totalAssigned < totalChapters; dayIdx++) {
         const dayPlan = schedule.days[dayIdx];
         
-        for (let i = 0; i < chaptersPerDay && bookIdx < selectedBooks.length; i++) {
+        // 남은 장수와 남은 날짜를 고려하여 오늘 읽을 장수 계산
+        const remainingChapters = totalChapters - totalAssigned;
+        const remainingDays = schedule.days.length - dayIdx;
+        const chaptersToday = Math.ceil(remainingChapters / remainingDays);
+        
+        for (let i = 0; i < chaptersToday && totalAssigned < totalChapters; i++) {
+          if (bookIdx >= selectedBooks.length) break;
+          
+          const book = selectedBooks[bookIdx];
           dayPlan.chapters.push({
             book: book.name,
             chapter: chapterIdx,
             read: false
           });
           
+          totalAssigned++;
           chapterIdx++;
+          
           if (chapterIdx > book.chapters) {
             bookIdx++;
             chapterIdx = 1;
-            if (bookIdx >= selectedBooks.length) break;
           }
         }
-        
-        dayIdx++;
-        if (dayIdx >= schedule.days.length) break;
       }
 
       schedules.push(schedule);
@@ -1146,10 +1157,19 @@
       const books = [...new Set(currentSchedule.books.map(b => b.name))];
       select.innerHTML = books.map(book => `<option value="${book}">${book}</option>`).join('');
       
-      if (books.length > 0) {
+      // 마지막으로 읽은 위치 불러오기
+      const lastRead = localStorage.getItem(`lastRead_${currentSchedule.id}`);
+      if (lastRead) {
+        const { book, chapter } = JSON.parse(lastRead);
+        currentBook = book;
+        currentChapter = chapter;
+        select.value = book;
+      } else if (books.length > 0) {
         currentBook = books[0];
-        loadChapters();
+        currentChapter = 1;
       }
+      
+      loadChapters();
     }
 
     function loadChapters() {
@@ -1164,25 +1184,30 @@
         `<option value="${i+1}">${i+1}장</option>`
       ).join('');
       
-      currentChapter = 1;
+      select.value = currentChapter;
       loadChapter();
     }
 
     function loadChapter() {
       currentChapter = parseInt(document.getElementById('chapterSelect').value);
       
+      // 현재 위치 저장
+      if (currentSchedule) {
+        localStorage.setItem(`lastRead_${currentSchedule.id}`, JSON.stringify({
+          book: currentBook,
+          chapter: currentChapter
+        }));
+      }
+      
       // 샘플 성경 본문 (실제로는 파일에서 로드)
-      const sampleVerses = [
-        { verse: 1, title: "천지 창조", text: "태초에 하나님이 천지를 창조하시니라" },
-        { verse: 2, text: "땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 영은 수면 위에 운행하시니라" },
-        { verse: 3, text: "하나님이 이르시되 빛이 있으라 하시니 빛이 있었고" }
-      ];
+      const sampleVerses = generateSampleVerses(currentBook, currentChapter);
 
       const content = document.getElementById('readingContent');
-      const bookmarkIds = bookmarks.map(b => `${currentBook}-${currentChapter}-${b.verse}`);
+      const bookmarkIds = bookmarks.map(b => `${b.book}-${b.chapter}-${b.verse}`);
       
       content.innerHTML = `
         <div class="chapter-content">
+          <h3 style="margin-bottom: 20px; color: #333;">${currentBook} ${currentChapter}장</h3>
           ${sampleVerses.map(v => `
             <div class="verse">
               <div class="verse-number">${v.verse}</div>
@@ -1205,6 +1230,16 @@
           </div>
         </div>
       `;
+    }
+
+    // 샘플 성경 구절 생성 (실제로는 파일에서 읽어옴)
+    function generateSampleVerses(book, chapter) {
+      const titles = ['천지 창조', '빛의 창조', '궁창의 창조', '땅과 바다', '해와 달', '생물의 창조'];
+      return Array.from({length: 10}, (_, i) => ({
+        verse: i + 1,
+        title: i === 0 ? titles[Math.floor(Math.random() * titles.length)] : null,
+        text: `${book} ${chapter}장 ${i + 1}절의 내용입니다. 실제로는 성경 텍스트 파일에서 불러온 내용이 표시됩니다.`
+      }));
     }
 
     function isChapterRead() {
@@ -1236,11 +1271,20 @@
         const currentBookIdx = booksData.findIndex(b => b.name === currentBook);
         if (currentBookIdx > 0) {
           const prevBook = booksData[currentBookIdx - 1];
+          
+          // 스케줄에 포함된 책인지 확인
+          if (currentSchedule && !currentSchedule.books.some(b => b.name === prevBook.name)) {
+            alert('이전 책은 현재 스케줄에 포함되어 있지 않습니다.');
+            return;
+          }
+          
           currentBook = prevBook.name;
           currentChapter = prevBook.chapters;
           
           document.getElementById('bookSelect').value = currentBook;
           loadChapters();
+        } else {
+          alert('첫 번째 장입니다.');
         }
       }
     }
@@ -1259,11 +1303,20 @@
         const currentBookIdx = booksData.findIndex(b => b.name === currentBook);
         if (currentBookIdx < booksData.length - 1) {
           const nextBook = booksData[currentBookIdx + 1];
+          
+          // 스케줄에 포함된 책인지 확인
+          if (currentSchedule && !currentSchedule.books.some(b => b.name === nextBook.name)) {
+            alert('다음 책은 현재 스케줄에 포함되어 있지 않습니다.');
+            return;
+          }
+          
           currentBook = nextBook.name;
           currentChapter = 1;
           
           document.getElementById('bookSelect').value = currentBook;
           loadChapters();
+        } else {
+          alert('마지막 장입니다.');
         }
       }
     }
